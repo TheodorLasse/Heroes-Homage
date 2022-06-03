@@ -1,10 +1,11 @@
 package src.sprites.Entities;
 
-import src.data.GameComponent;
-import src.data.GameMap;
-import src.data.Rotation;
-import src.data.Vector2D;
-import src.data.time.DeltaTime;
+import src.tools.GameComponent;
+import src.GameMap;
+import src.tools.MapFocus;
+import src.tools.Rotation;
+import src.tools.Vector2D;
+import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
 
 import java.awt.*;
@@ -27,8 +28,8 @@ public abstract class Entity implements Sprite {
     /**
      * Updates the entity.
      */
-    public void update(DeltaTime deltaTime, Vector2D mapFocus) {
-        relativePosition = Vector2D.getDifference(position, mapFocus);
+    public void update(DeltaTime deltaTime, MapFocus mapFocus) {
+        relativePosition = Vector2D.getDifference(position, mapFocus.getPosition());
     }
 
     @Override public Vector2D getPosition() {
@@ -47,6 +48,14 @@ public abstract class Entity implements Sprite {
         return texture;
     }
 
+    public boolean isOverlap(Vector2D mousePos){
+        double x = mousePos.getX();
+        double y = mousePos.getY();
+        boolean isWithinX = position.getX() <= x && x <= position.getX() + size.getX();
+        boolean isWithinY = position.getY() <= y && y <= position.getY() + size.getY();
+        return isWithinX && isWithinY;
+    }
+
     protected void setSize(Vector2D size){
         this.size = size;
     }
@@ -62,4 +71,6 @@ public abstract class Entity implements Sprite {
     @Override public void draw(final Graphics g, final GameComponent gc) {
         g.drawImage(getTexture(), (int) relativePosition.getX() * GameMap.TILE_SIZE, (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
     }
+
+    public void onClick(){}
 }

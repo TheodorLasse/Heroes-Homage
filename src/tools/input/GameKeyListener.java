@@ -1,4 +1,4 @@
-package src.data.input;
+package src.tools.input;
 
 import java.util.AbstractMap;
 

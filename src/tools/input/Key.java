@@ -1,4 +1,4 @@
-package src.data.input;
+package src.tools.input;
 
 /**
  * Enum with the different types of keys that the user can press.

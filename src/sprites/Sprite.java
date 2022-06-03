@@ -1,6 +1,6 @@
 package src.sprites;
-import src.data.GameComponent;
-import src.data.Vector2D;
+import src.tools.GameComponent;
+import src.tools.Vector2D;
 
 import java.awt.*;
 

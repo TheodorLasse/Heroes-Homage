@@ -1,6 +1,6 @@
 package src.sprites.Entities;
 
-import src.data.Vector2D;
+import src.tools.Vector2D;
 
 import java.awt.image.BufferedImage;
 

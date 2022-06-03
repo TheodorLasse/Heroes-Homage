@@ -1,4 +1,4 @@
-package src.data.input;
+package src.tools.input;
 
 /**
  * Enum with the different possible states for at key.

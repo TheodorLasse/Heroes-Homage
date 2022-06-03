@@ -1,11 +1,11 @@
 package src;
 
-import src.data.GameComponent;
-import src.data.GameMap;
-import src.data.ImageLoader;
-import src.data.Vector2D;
-import src.data.input.KeyHandler;
-import src.data.time.DeltaTime;
+import src.tools.GameComponent;
+import src.tools.ImageLoader;
+import src.tools.Vector2D;
+import src.tools.input.KeyHandler;
+import src.tools.input.MouseListener;
+import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;
@@ -29,8 +29,8 @@ public class Game {
     private static final double MAX_FPS = 144;
     private static final Random RND = new Random();
     public static final ImageLoader imageLoader = new ImageLoader();
-    private SpriteHandler spriteHandler = null;
-    private GameMap gameMap = null;
+    private SpriteHandler spriteHandler;
+    private GameMap gameMap;
 
 
     GameComponent gc;
@@ -57,6 +57,7 @@ public class Game {
 
         final KeyHandler keyHandler = new KeyHandler(gc);
         keyHandler.addKeyListener(gameMap);
+        final MouseListener mouseListener = new MouseListener(gc, this);
     }
 
     /**
@@ -82,7 +83,7 @@ public class Game {
             if (totalTime < minFrameTime) {
                 try {
                     TimeUnit.NANOSECONDS.sleep((long) minFrameTime - totalTime);
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException ignored) {}
             }
         }
     }
@@ -92,14 +93,13 @@ public class Game {
      */
     private void update(DeltaTime deltaTime) {
         spriteHandler.update(deltaTime);
-        gameMap.update(deltaTime, getMapDimension());
+        gameMap.update(deltaTime);
     }
 
     public Dimension getScreenDimension(){
-        return screenSize;
+        return new Dimension((int)(screenSize.width * 0.8), screenSize.height);
     }
 
-    public Dimension getMapDimension(){return new Dimension((int)(screenSize.width*0.8), screenSize.height);}
 
     /**
      * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
@@ -107,9 +107,8 @@ public class Game {
      */
     public Iterable<Sprite> getSpriteIterator() {
         List<Sprite> sprites = new ArrayList<>();
-        Vector2D scope = new Vector2D(getMapDimension().getWidth()/GameMap.TILE_SIZE, getMapDimension().getHeight()/GameMap.TILE_SIZE);
 
-        sprites.addAll(gameMap.getIterator(scope));
+        sprites.addAll(gameMap.getIterator());
         sprites.addAll(spriteHandler.getLayerIterator(SpriteLayer.FIRST));
         sprites.addAll(spriteHandler.getLayerIterator(SpriteLayer.LAST));
 
@@ -122,7 +121,10 @@ public class Game {
     private void setUpWindow() {
         JFrame frame = new JFrame("Game");
         frame.setLayout(new BorderLayout());
-        frame.getContentPane().add(gc);
+        Container contentPane = frame.getContentPane();
+        contentPane.add(gc, BorderLayout.WEST);
+        GameComponent gc1 = new GameComponent(this);
+        contentPane.add(gc1, BorderLayout.EAST);
         frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
@@ -148,6 +150,10 @@ public class Game {
                 logger.addHandler(ch);
             }
         }
+    }
+
+    public void mouseClick(int x, int y) {
+
     }
 }
 

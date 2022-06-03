@@ -1,4 +1,4 @@
-package src.data;
+package src.tools;
 
 import src.Game;
 import src.sprites.Sprite;
@@ -9,11 +9,11 @@ import java.awt.*;
 /**
  * Class for drawing on the JFrame created in the Game class.
  */
-public class GameComponent extends JComponent
+public class MenuComponent extends JComponent
 {
     private final Game game;
 
-    public GameComponent(Game game){
+    public MenuComponent(Game game){
         this.game = game;
 
     }
@@ -29,8 +29,7 @@ public class GameComponent extends JComponent
 
         // Draw all sprites
         for (Sprite sprite : game.getSpriteIterator()) {
-            sprite.draw(g, this);
+            //sprite.draw(g, this);
         }
     }
-
 }

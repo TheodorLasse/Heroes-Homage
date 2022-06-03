@@ -1,10 +1,10 @@
 package src.sprites.Entities;
 
 import src.Game;
-import src.data.GameComponent;
-import src.data.GameMap;
-import src.data.ImageLoader;
-import src.data.Vector2D;
+import src.tools.GameComponent;
+import src.GameMap;
+import src.tools.ImageLoader;
+import src.tools.Vector2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

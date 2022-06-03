@@ -1,4 +1,4 @@
-package src.data;
+package src.tools;
 
 import java.util.Objects;
 

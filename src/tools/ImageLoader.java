@@ -1,4 +1,4 @@
-package src.data;
+package src.tools;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

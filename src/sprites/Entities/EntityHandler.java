@@ -1,10 +1,10 @@
 package src.sprites.Entities;
 
-import src.data.Vector2D;
+import src.tools.MapFocus;
+import src.tools.Vector2D;
 import src.sprites.Sprite;
-import src.data.time.DeltaTime;
+import src.tools.time.DeltaTime;
 
-import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class EntityHandler
      *
      * @param deltaTime
      */
-    public void update(DeltaTime deltaTime, Vector2D mapFocus) {
+    public void update(DeltaTime deltaTime, MapFocus mapFocus) {
 	// Update all entities
 	for (Entity entity : entities) {
 	    entity.update(deltaTime, mapFocus);
@@ -86,7 +86,7 @@ public class EntityHandler
      *
      * @return Iterator with sprites
      */
-    public ArrayList<Sprite> getIterator() {
+    public ArrayList<Entity> getIterator() {
 		return new ArrayList<>(entities);
     }
 

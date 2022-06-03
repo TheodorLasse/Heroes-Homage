@@ -1,15 +1,14 @@
-package src.data;
+package src;
 
-import src.Game;
-import src.data.input.GameKeyListener;
-import src.data.input.Key;
-import src.data.input.KeyEvent;
-import src.data.input.KeyState;
-import src.data.time.DeltaTime;
-import src.sprites.Entities.EntityHandler;
-import src.sprites.Entities.MapEntity;
-import src.sprites.Entities.MapLivingEntity;
-import src.sprites.Entities.TeamType;
+import src.sprites.Entities.*;
+import src.tools.ImageLoader;
+import src.tools.MapFocus;
+import src.tools.Vector2D;
+import src.tools.input.GameKeyListener;
+import src.tools.input.Key;
+import src.tools.input.KeyEvent;
+import src.tools.input.KeyState;
+import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.lang.Double.max;
 import static java.lang.Math.min;
 
 enum MapTileType { WATER, GRASS, ROAD, PAVEMENT, ERROR}
@@ -35,7 +33,7 @@ public class GameMap implements GameKeyListener {
     Dimension mapSize = new Dimension(500,500);
     Dimension screenSize;
 
-    Vector2D mapFocus = new Vector2D(0,0);
+    MapFocus mapFocus;
 
     public GameMap(Dimension screenSize)
     {
@@ -43,16 +41,17 @@ public class GameMap implements GameKeyListener {
         background = new BufferedImage(mapSize.width * TILE_SIZE, mapSize.height * TILE_SIZE, TYPE_INT_ARGB);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
+        mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
         mapTiles = new ArrayList<>();
-        mapEntityHandler.add(new MapEntity(new Vector2D(19,20), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        mapEntityHandler.add(new MapEntity(new Vector2D(0,0), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(20,19), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
-        init();
+        initBackground();
 
     }
 
-    private void init(){
+    private void initBackground(){
         Graphics g = background.getGraphics();
         for (int y = 0; y < mapSize.height; y++){
             List<MapTileType> current;
@@ -76,47 +75,33 @@ public class GameMap implements GameKeyListener {
         }
     }
 
-    public void update(DeltaTime deltaTime, Dimension screenSize){
+    public void update(DeltaTime deltaTime){
         mapSpriteHandler.update(deltaTime);
         mapEntityHandler.update(deltaTime, mapFocus);
     }
 
-    public ArrayList<Sprite> getIterator(Vector2D scope){
-        ArrayList<Sprite> iterList = new ArrayList<>();
-
-        //TODO have this refer to size of object in focus, when focus function is implemented
-        Vector2D size = new Vector2D();
-
-        Vector2D centre = Vector2D.getSum(mapFocus, new Vector2D(size.getX()/2, size.getY()/2));
-        double posX = centre.getX() - scope.getX()/2;
-        double posY = centre.getY() - scope.getY()/2;
-        double width = scope.getX();
-        double height = scope.getY();
-        posX = max(posX, 0);
-        posY = max(posY, 0);
-        width = min(width, mapSize.getWidth());
-        height = min(height, mapSize.getHeight());
+    public ArrayList<Sprite> getIterator(){
+        int width = (int) min(screenSize.getWidth() / TILE_SIZE, mapSize.getWidth());
+        int height = (int) min(screenSize.getHeight() / TILE_SIZE, mapSize.getHeight());
 
         mapSpriteHandler.setBackground(background.getSubimage(
-                (int) (posX * TILE_SIZE), (int) (posY * TILE_SIZE),
-                (int) (width * TILE_SIZE), (int) (height * TILE_SIZE)));
+                (int) (mapFocus.getX() * TILE_SIZE), (int) (mapFocus.getY() * TILE_SIZE),
+                (width * TILE_SIZE), (height * TILE_SIZE)));
 
-        iterList.addAll(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
-
-        for (Sprite entity:mapEntityHandler.getIterator()) {
-            Vector2D entityPos = entity.getPosition();
-            boolean inScope =
-                    entityPos.getX() >= posX + entity.getSize().getX() &&
-                    entityPos.getY() >= posY + entity.getSize().getY() &&
-                    entityPos.getX() <= width &&
-                    entityPos.getY() <= height;
-
-            if (inScope){
-                iterList.add(entity);
-            }
-        }
+        ArrayList<Sprite> iterList = new ArrayList<>(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
+        iterList.addAll(mapEntityHandler.getIterator());
 
         return iterList;
+    }
+
+    public void onMouseClick(int x, int y){
+        Vector2D mousePos = new Vector2D(x, y);
+        Vector2D mouseMapFocus = Vector2D.getSum(mousePos, mapFocus.getPosition());
+        for (Entity mapEntity : mapEntityHandler.getIterator()) {
+            if (mapEntity.isOverlap(mouseMapFocus)){
+                mapEntity.onClick();
+            }
+        }
     }
 
     @Override
@@ -125,19 +110,15 @@ public class GameMap implements GameKeyListener {
         switch (e.getKey()) {
             case LEFT -> {
                 mapFocus.addX(-mapShiftStep);
-                if (mapFocus.getX() < 0) mapFocus.setX(0);
             }
             case RIGHT -> {
                 mapFocus.addX(mapShiftStep);
-                if (mapFocus.getX() > mapSize.getWidth() * TILE_SIZE - screenSize.getWidth()) mapFocus.setX(0);
             }
             case UP -> {
                 mapFocus.addY(-mapShiftStep);
-                if (mapFocus.getY() < 0) mapFocus.setY(0);
             }
             case DOWN -> {
                 mapFocus.addY(mapShiftStep);
-                if (mapFocus.getY() > mapSize.getHeight() * TILE_SIZE - screenSize.getHeight()) mapFocus.setY(0);
             }
         }
     }

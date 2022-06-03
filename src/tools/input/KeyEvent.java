@@ -1,4 +1,4 @@
-package src.data.input;
+package src.tools.input;
 
 /**
  * Class for representing a single key press or release.

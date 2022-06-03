@@ -1,6 +1,6 @@
 package src.sprites;
 
-import src.data.*;
+import src.tools.*;
 
 
 import java.awt.*;

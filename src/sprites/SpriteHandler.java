@@ -1,7 +1,7 @@
 package src.sprites;
 
-import src.data.Vector2D;
-import src.data.time.*;
+import src.tools.Vector2D;
+import src.tools.time.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

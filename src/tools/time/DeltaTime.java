@@ -1,4 +1,4 @@
-package src.data.time;
+package src.tools.time;
 
 /**
  * Class for representing a length of time. It has the time resolution of one nano second. The time length can not be changed
