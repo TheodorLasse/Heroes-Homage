@@ -32,4 +32,5 @@ public class GameComponent extends JComponent
             sprite.draw(g, this);
         }
     }
+
 }

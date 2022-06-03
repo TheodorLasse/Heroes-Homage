@@ -12,7 +12,7 @@ public class ImageLoader
 {
     public enum ImageName
     {
-        GRASS, ROCK, ERROR
+        GRASS, ROCK, BLUE_FLAG, RED_FLAG, ERROR
     }
 
     /**
@@ -21,6 +21,9 @@ public class ImageLoader
     final private static Map<ImageName, String> IMAGE_NAME_MAP = Map.ofEntries(
             Map.entry(ImageName.GRASS, "grass"),
             Map.entry(ImageName.ROCK, "rock"),
+            Map.entry(ImageName.BLUE_FLAG, "blue_flag"),
+            Map.entry(ImageName.RED_FLAG, "red_flag"),
+
             Map.entry(ImageName.ERROR, "grass")
     );
 

@@ -131,6 +131,18 @@ public class Vector2D
 	return new Vector2D(vector1.x + vector2.x, vector1.y + vector2.y);
     }
 
+	/**
+	 * Returns a new vector with the first vector minus the second vector
+	 *
+	 * @param vector1
+	 * @param vector2
+	 *
+	 * @return A new vector.
+	 */
+	public static Vector2D getDifference(Vector2D vector1, Vector2D vector2) {
+		return new Vector2D(vector1.x - vector2.x, vector1.y - vector2.y);
+	}
+
     /**
      * Returns a new vector from a multiplication.
      *

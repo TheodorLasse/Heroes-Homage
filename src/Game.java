@@ -4,6 +4,7 @@ import src.data.GameComponent;
 import src.data.GameMap;
 import src.data.ImageLoader;
 import src.data.Vector2D;
+import src.data.input.KeyHandler;
 import src.data.time.DeltaTime;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
@@ -51,8 +52,11 @@ public class Game {
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         gc = new GameComponent(this);
         spriteHandler = new SpriteHandler();
-        gameMap = new GameMap();
-        show();
+        gameMap = new GameMap(screenSize);
+        setUpWindow();
+
+        final KeyHandler keyHandler = new KeyHandler(gc);
+        keyHandler.addKeyListener(gameMap);
     }
 
     /**
@@ -88,19 +92,14 @@ public class Game {
      */
     private void update(DeltaTime deltaTime) {
         spriteHandler.update(deltaTime);
-    }
-
-    public int getWidth() {
-        return screenSize.width;
-    }
-
-    public int getHeight() {
-        return screenSize.height;
+        gameMap.update(deltaTime, getMapDimension());
     }
 
     public Dimension getScreenDimension(){
         return screenSize;
     }
+
+    public Dimension getMapDimension(){return new Dimension((int)(screenSize.width*0.8), screenSize.height);}
 
     /**
      * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
@@ -108,25 +107,19 @@ public class Game {
      */
     public Iterable<Sprite> getSpriteIterator() {
         List<Sprite> sprites = new ArrayList<>();
+        Vector2D scope = new Vector2D(getMapDimension().getWidth()/GameMap.TILE_SIZE, getMapDimension().getHeight()/GameMap.TILE_SIZE);
 
-        //param 1: top left corner pos, param 2: size of object in middle of screen, param 3: scope to draw
-        sprites.addAll(gameMap.getIterator(new Vector2D(10, 20), new Vector2D(), new Vector2D(5, 5)));
+        sprites.addAll(gameMap.getIterator(scope));
         sprites.addAll(spriteHandler.getLayerIterator(SpriteLayer.FIRST));
         sprites.addAll(spriteHandler.getLayerIterator(SpriteLayer.LAST));
 
         return sprites;
     }
 
-    private void addIterator(List<Sprite> sprites, Iterable<Sprite> it) {
-        for (Sprite s : it) {
-            sprites.add(s);
-        }
-    }
-
     /**
      * Creates the game window.
      */
-    private void show() {
+    private void setUpWindow() {
         JFrame frame = new JFrame("Game");
         frame.setLayout(new BorderLayout());
         frame.getContentPane().add(gc);
