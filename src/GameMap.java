@@ -86,12 +86,9 @@ public class GameMap implements GameKeyListener {
     }
 
     public ArrayList<Sprite> getIterator(){
-        int width = (int) min(screenSize.getWidth() / TILE_SIZE, mapSize.getWidth());
-        int height = (int) min(screenSize.getHeight() / TILE_SIZE, mapSize.getHeight());
-
         mapSpriteHandler.setBackground(background.getSubimage(
                 (int) (mapFocus.getX() * TILE_SIZE), (int) (mapFocus.getY() * TILE_SIZE),
-                (width * TILE_SIZE), (height * TILE_SIZE)));
+                ((int) screenSize.getWidth()), (int) (screenSize.getWidth())));
 
         ArrayList<Sprite> iterList = new ArrayList<>(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
         iterList.addAll(mapEntityHandler.getIterator());
@@ -120,8 +117,8 @@ public class GameMap implements GameKeyListener {
         int[][] map = calculateBlocked();
         ShortestPath.Point entityPoint = new ShortestPath.Point((int) entity.getPosition().getX(), (int) entity.getPosition().getY(), null);
         ShortestPath.Point destinationPoint = new ShortestPath.Point((int) mapPos.getX(), (int) mapPos.getY(), null);
-        List<ShortestPath.Point> path = ShortestPath.FindPath(map, entityPoint, destinationPoint);
-        entity.setPath(path);
+        //List<ShortestPath.Point> path = ShortestPath.FindPath(map, entityPoint, destinationPoint);
+        //entity.setPath(path);
     }
 
     private int[][] calculateBlocked(){
