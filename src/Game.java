@@ -145,9 +145,6 @@ public class Game {
             logger.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
         } catch (IOException e) {
-            // This catch clause triggers a "CatchFallthrough" warning in the automatic code inspection. The warning can be ignored because
-            // the exception is handled in the catch clause (In this case by adding a ConsoleHandler instead of the FileHandler).
-
             logger.log(Level.SEVERE, e.toString(), e);
 
             // If the logger don't have any handlers, add a ConsoleHandler

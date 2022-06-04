@@ -1,10 +1,12 @@
 package src.sprites.Entities;
 
+import src.Game;
 import src.GameMap;
 import src.tools.MapFocus;
 import src.tools.Rotation;
-import src.tools.ShortestPath;
 import src.tools.Vector2D;
+import src.tools.aStar.Mover;
+import src.tools.aStar.Path;
 import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
 
@@ -13,13 +15,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-public abstract class Entity implements Sprite {
+public abstract class Entity implements Sprite, Mover {
     protected Vector2D position;
     protected Vector2D relativePosition;
     protected Vector2D size;
     protected Rotation rotation;
     protected BufferedImage texture;
-    List<ShortestPath.Point> path;
 
     protected Entity(final Vector2D position, final Vector2D size, final double rotation, final BufferedImage texture){
         this.position = position;
@@ -78,6 +79,7 @@ public abstract class Entity implements Sprite {
     public void onClick(){
     }
 
-    public void setPath(List<ShortestPath.Point> path){
+    public void onMouseClick3(GameMap map, Vector2D mouseMapPos){
+
     }
 }

@@ -3,8 +3,11 @@ package src;
 import src.sprites.Entities.*;
 import src.tools.ImageLoader;
 import src.tools.MapFocus;
-import src.tools.ShortestPath;
 import src.tools.Vector2D;
+import src.tools.aStar.AStarPathFinder;
+import src.tools.aStar.Path;
+import src.tools.aStar.PathFinder;
+import src.tools.aStar.PathMap;
 import src.tools.input.GameKeyListener;
 import src.tools.input.Key;
 import src.tools.input.KeyEvent;
@@ -20,26 +23,35 @@ import java.util.*;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static java.lang.Math.min;
 
 enum MapTileType { WATER, GRASS, ROAD, PAVEMENT, ERROR}
 
 public class GameMap implements GameKeyListener {
     public static final int TILE_SIZE = 20;
-    List<List<MapTileType>> mapTiles;
-    SpriteHandler mapSpriteHandler;
-    EntityHandler mapEntityHandler;
-    BufferedImage background;
-    Dimension mapSize = new Dimension(500,500);
-    Dimension screenSize;
+    private final List<List<MapTileType>> mapTiles;
+    private final SpriteHandler mapSpriteHandler;
+    private final EntityHandler mapEntityHandler;
+    private final BufferedImage background;
 
-    MapFocus mapFocus;
-    Entity entityFocus;
+    private final Dimension mapSize = new Dimension(500,500);
+    private final Dimension screenSize;
 
+    private final PathMap pathMap;
+    private final PathFinder finder;
+
+    private final MapFocus mapFocus;
+    private Entity entityFocus;
+
+    /**
+     * Object that contains and controls the map
+     * @param screenSize Size of the screen located for GameMap
+     */
     public GameMap(Dimension screenSize)
     {
         this.screenSize = screenSize;
         background = new BufferedImage(mapSize.width * TILE_SIZE, mapSize.height * TILE_SIZE, TYPE_INT_ARGB);
+        pathMap = new PathMap(mapSize, null);
+        finder = new AStarPathFinder(pathMap, 500, true);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
         mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
@@ -52,6 +64,9 @@ public class GameMap implements GameKeyListener {
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(30,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
     }
 
+    /**
+     * Initialize the background image
+     */
     private void initBackground(){
         Graphics g = background.getGraphics();
         for (int y = 0; y < mapSize.height; y++){
@@ -80,11 +95,19 @@ public class GameMap implements GameKeyListener {
         }
     }
 
+    /**
+     * Update GameMap
+     * @param deltaTime how long since last update
+     */
     public void update(DeltaTime deltaTime){
         mapSpriteHandler.update(deltaTime);
         mapEntityHandler.update(deltaTime, mapFocus);
     }
 
+    /**
+     *
+     * @return Iterable of all of the Entity objects located in the GameMap
+     */
     public ArrayList<Sprite> getIterator(){
         mapSpriteHandler.setBackground(background.getSubimage(
                 (int) (mapFocus.getX() * TILE_SIZE), (int) (mapFocus.getY() * TILE_SIZE),
@@ -96,10 +119,15 @@ public class GameMap implements GameKeyListener {
         return iterList;
     }
 
+    /**
+     * When GameMap is clicked on by mouse
+     * @param mousePos position of mouse on JFrame
+     * @param mouseButton button that was pressed
+     */
     public void onMouseClick(Vector2D mousePos, int mouseButton){
         Vector2D mouseMapPos = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
         Vector2D mouseMapFocus = Vector2D.getSum(mouseMapPos, mapFocus.getPosition());
-        calculateBlocked();
+        getBlocked();
         if(mouseButton == 1){
             for (Entity mapEntity : mapEntityHandler.getIterator()) {
                 if (mapEntity.isOverlap(mouseMapFocus)){
@@ -109,19 +137,26 @@ public class GameMap implements GameKeyListener {
             }
         }
         else if (mouseButton == 3){
-            setPath(entityFocus, mouseMapPos);
+            entityFocus.onMouseClick3(this, mouseMapPos);
         }
     }
 
-    private void setPath(Entity entity, Vector2D mapPos){
-        int[][] map = calculateBlocked();
-        ShortestPath.Point entityPoint = new ShortestPath.Point((int) entity.getPosition().getX(), (int) entity.getPosition().getY(), null);
-        ShortestPath.Point destinationPoint = new ShortestPath.Point((int) mapPos.getX(), (int) mapPos.getY(), null);
-        //List<ShortestPath.Point> path = ShortestPath.FindPath(map, entityPoint, destinationPoint);
-        //entity.setPath(path);
+    /**
+     * Chart a path to a mapPos for an entity
+     * @param entity entity from which path is started
+     * @param mapPos position to which path goes
+     * @return Array of Steps to reach mapPos
+     */
+    public Path getPath(Entity entity, Vector2D mapPos){
+        pathMap.setTerrain(getBlocked());
+        Vector2D entityPos = entity.getPosition();
+        return finder.findPath(entity, (int)entityPos.getX(), (int)entityPos.getY(), (int)mapPos.getX(), (int)mapPos.getY());
     }
 
-    private int[][] calculateBlocked(){
+    /**
+     * Calculates and returns all blocked positions of the map, 1 = blocked, 0 = free
+     */
+    private int[][] getBlocked(){
         int[][] blocked = new int[mapSize.height][mapSize.width];
         for (int y = 0; y < mapTiles.size(); y++){
             for (int x = 0; x < mapTiles.get(y).size(); x++){

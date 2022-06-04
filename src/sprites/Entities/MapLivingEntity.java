@@ -4,20 +4,18 @@ import src.Game;
 import src.GameMap;
 import src.tools.ImageLoader;
 import src.tools.MapFocus;
-import src.tools.ShortestPath;
 import src.tools.Vector2D;
+import src.tools.aStar.Path;
 import src.tools.time.DeltaTime;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MapLivingEntity extends MapEntity {
     private TeamType team = TeamType.NEUTRAL;
     private BufferedImage flag;
-    List<ShortestPath.Point> path;
+    Path path;
     double timeUntilMove = 0;
     double timeBetweenMoves = 0.5;
 
@@ -46,21 +44,22 @@ public class MapLivingEntity extends MapEntity {
     }
 
     private void move(DeltaTime deltaTime){
-        if (path == null || path.size() == 0) return;
+
+        if (path == null || path.getLength() == 0) return;
 
         timeUntilMove -= deltaTime.getSeconds();
         if (timeUntilMove <= 0){
-            position.setX(path.get(0).x);
-            position.setY(path.get(0).y);
-            path.remove(0);
+            Path.Step nextStep = path.popStep();
+            position.setX(nextStep.getX());
+            position.setY(nextStep.getY());
             timeUntilMove = timeBetweenMoves;
         }
     }
 
     @Override
-    public void setPath(List<ShortestPath.Point> path) {
-        super.setPath(path);
-        this.path = path;
+    public void onMouseClick3(GameMap map, Vector2D mouseMapPos) {
+        super.onMouseClick3(map, mouseMapPos);
+        path = map.getPath(this, mouseMapPos);
     }
 
     @Override
