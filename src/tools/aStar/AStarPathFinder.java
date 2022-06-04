@@ -3,6 +3,7 @@ package src.tools.aStar;
 
 import src.tools.aStar.heuristics.ClosestHeuristic;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -38,6 +39,11 @@ public class AStarPathFinder implements PathFinder {
             }
         }
 
+    }
+
+    @Override
+    public void setMap(Dimension mapSize, int[][] terrain) {
+        map = new PathMap(mapSize, terrain);
     }
 
     public Path findPath(Mover mover, int sx, int sy, int tx, int ty) {

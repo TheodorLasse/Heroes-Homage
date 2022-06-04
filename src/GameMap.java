@@ -33,10 +33,9 @@ public class GameMap implements GameKeyListener {
     private final EntityHandler mapEntityHandler;
     private final BufferedImage background;
 
-    private final Dimension mapSize = new Dimension(500,500);
+    private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
 
-    private final PathMap pathMap;
     private final PathFinder finder;
 
     private final MapFocus mapFocus;
@@ -44,14 +43,13 @@ public class GameMap implements GameKeyListener {
 
     /**
      * Object that contains and controls the map
-     * @param screenSize Size of the screen located for GameMap
+     * @param screenSize Size of the screen allocated for GameMap
      */
     public GameMap(Dimension screenSize)
     {
         this.screenSize = screenSize;
         background = new BufferedImage(mapSize.width * TILE_SIZE, mapSize.height * TILE_SIZE, TYPE_INT_ARGB);
-        pathMap = new PathMap(mapSize, null);
-        finder = new AStarPathFinder(pathMap, 500, true);
+        finder = new AStarPathFinder(new PathMap(mapSize, null), 500, true);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
         mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
@@ -69,11 +67,11 @@ public class GameMap implements GameKeyListener {
      */
     private void initBackground(){
         Graphics g = background.getGraphics();
-        for (int y = 0; y < mapSize.height; y++){
+        for (int x = 0; x < mapSize.width; x++){
             List<MapTileType> current;
-            current = new ArrayList<>(mapSize.width);
+            current = new ArrayList<>(mapSize.height);
 
-            for (int x = 0; x < mapSize.width; x++){
+            for (int y = 0; y < mapSize.height; y++){
                 MapTileType type = MapTileType.GRASS;
                 if (y <= 5){
                     type = MapTileType.WATER;
@@ -111,7 +109,7 @@ public class GameMap implements GameKeyListener {
     public ArrayList<Sprite> getIterator(){
         mapSpriteHandler.setBackground(background.getSubimage(
                 (int) (mapFocus.getX() * TILE_SIZE), (int) (mapFocus.getY() * TILE_SIZE),
-                ((int) screenSize.getWidth()), (int) (screenSize.getWidth())));
+                (int) (screenSize.getWidth()), ((int) screenSize.getHeight())));
 
         ArrayList<Sprite> iterList = new ArrayList<>(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
         iterList.addAll(mapEntityHandler.getIterator());
@@ -136,7 +134,7 @@ public class GameMap implements GameKeyListener {
                 }
             }
         }
-        else if (mouseButton == 3){
+        else if (mouseButton == 3 && entityFocus != null){
             entityFocus.onMouseClick3(this, mouseMapPos);
         }
     }
@@ -148,8 +146,8 @@ public class GameMap implements GameKeyListener {
      * @return Array of Steps to reach mapPos
      */
     public Path getPath(Entity entity, Vector2D mapPos){
-        pathMap.setTerrain(getBlocked());
         Vector2D entityPos = entity.getPosition();
+        finder.setMap(mapSize, getBlocked());
         return finder.findPath(entity, (int)entityPos.getX(), (int)entityPos.getY(), (int)mapPos.getX(), (int)mapPos.getY());
     }
 
@@ -157,11 +155,11 @@ public class GameMap implements GameKeyListener {
      * Calculates and returns all blocked positions of the map, 1 = blocked, 0 = free
      */
     private int[][] getBlocked(){
-        int[][] blocked = new int[mapSize.height][mapSize.width];
+        int[][] blocked = new int[mapSize.width][mapSize.height];
         for (int y = 0; y < mapTiles.size(); y++){
             for (int x = 0; x < mapTiles.get(y).size(); x++){
                 switch (mapTiles.get(y).get(x)){
-                    case WATER -> blocked[y][x] = 1;
+                    case WATER -> blocked[x][y] = 1;
                 }
             }
         }
@@ -178,6 +176,10 @@ public class GameMap implements GameKeyListener {
         }
 
         return blocked;
+    }
+
+    public Vector2D relativeToAbsolutePos(Vector2D relativePos){
+        return Vector2D.getSum(relativePos, mapFocus.getPosition());
     }
 
     @Override

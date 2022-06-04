@@ -13,5 +13,5 @@ public interface Sprite
     Vector2D getSize();
     double getRotation();
 
-    void draw(final Graphics g, final JComponent gc);
+    void draw(final Graphics g, final JComponent jc);
 }

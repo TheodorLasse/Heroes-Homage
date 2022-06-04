@@ -9,6 +9,12 @@ public class MapFocus {
     Dimension screenSize;
     Dimension mapSize;
 
+    /**
+     * Controls which part of the map is visible on screen
+     * @param position top left corner of the mapFocus, measured in tile coords
+     * @param screenSize size of the screen which mapFocus is placed in, measured in pixels
+     * @param mapSize size of the map which mapFocus is placed in, measured in tile coords
+     */
     public MapFocus(Vector2D position, Dimension screenSize, Dimension mapSize){
         this.position = position;
         this.screenSize = screenSize;
@@ -17,16 +23,16 @@ public class MapFocus {
 
     public void addX(double x) {
         position.addX(x);
-        if (position.getX() > mapSize.getWidth() * TILE_SIZE - screenSize.getWidth())
-            position.setX(mapSize.getHeight() * TILE_SIZE - screenSize.getWidth());
+        if (position.getX() > mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE)
+            position.setX(mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE);
         else if (position.getX() < 0)
             position.setX(0);
     }
 
     public void addY(double y){
         position.addY(y);
-        if (position.getY() > mapSize.getHeight() * TILE_SIZE - screenSize.getHeight())
-            position.setY(mapSize.getHeight() * TILE_SIZE - screenSize.getHeight());
+        if (position.getY() > mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE)
+            position.setY(mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE);
         else if (position.getY() < 0)
             position.setY(0);
     }

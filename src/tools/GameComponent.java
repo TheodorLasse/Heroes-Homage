@@ -27,7 +27,7 @@ public class GameComponent extends JComponent
         super.paintComponent(g);
 
         // Draw all sprites
-        for (Sprite sprite : game.getSpriteIterator()) {
+        for (Sprite sprite : game.getGameSpriteIterator()) {
             sprite.draw(g, this);
         }
     }

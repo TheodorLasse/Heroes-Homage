@@ -16,7 +16,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
@@ -29,8 +28,8 @@ public class Game {
     private final Logger logger = Logger.getLogger("");
     private static final double MAX_FPS = 144;
     public static final ImageLoader imageLoader = new ImageLoader();
-    private SpriteHandler spriteHandler;
-    private GameMap gameMap;
+    private final GameMap gameMap;
+    private final GameMenu gameMenu;
 
 
     public GameComponent gameComponent;
@@ -53,14 +52,10 @@ public class Game {
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         gameComponent = new GameComponent(this);
         menuComponent = new MenuComponent(this);
-        spriteHandler = new SpriteHandler();
-        gameMap = new GameMap(screenSize);
+        gameMap = new GameMap(getMapScreenDimension());
+        gameMenu = new GameMenu(getMenuScreenDimension());
         setUpWindow();
-
-        final KeyHandler keyHandler = new KeyHandler(gameComponent);
-        keyHandler.addKeyListener(gameMap);
-        final MouseListener mouseMapListener = new MouseListener(gameComponent, this);
-        final MouseListener mouseMenuListener = new MouseListener(menuComponent, this);
+        setUpIO();
     }
 
     /**
@@ -95,7 +90,6 @@ public class Game {
      * Updates the game.
      */
     private void update(DeltaTime deltaTime) {
-        spriteHandler.update(deltaTime);
         gameMap.update(deltaTime);
     }
 
@@ -112,13 +106,20 @@ public class Game {
      * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
      * sprites are drawn before entities, etc
      */
-    public Iterable<Sprite> getSpriteIterator() {
+    public Iterable<Sprite> getGameSpriteIterator() {
         List<Sprite> sprites = new ArrayList<>();
 
         sprites.addAll(gameMap.getIterator());
-        sprites.addAll(spriteHandler.getLayerIterator(SpriteLayer.FIRST));
-        sprites.addAll(spriteHandler.getLayerIterator(SpriteLayer.LAST));
 
+        return sprites;
+    }
+
+    /**
+     * Returns an iterable var of all sprites. Basically merges all sprites into one list for menuComponent. The list's
+     * order is the order sprites get drawn.
+     */
+    public Iterable<Sprite> getMenuSpriteIterator() {
+        List<Sprite> sprites = new ArrayList<>();
         return sprites;
     }
 
@@ -153,6 +154,16 @@ public class Game {
                 logger.addHandler(ch);
             }
         }
+    }
+
+    /**
+     * Sets listeners for key presses and mouse clicks
+     */
+    private void setUpIO() {
+        final KeyHandler keyHandler = new KeyHandler(gameComponent);
+        keyHandler.addKeyListener(gameMap);
+        new MouseListener(gameComponent, this);
+        new MouseListener(menuComponent, this);
     }
 
     public void mouseMapClick(Vector2D mousePos, int mouseButton) {

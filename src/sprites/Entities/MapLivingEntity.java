@@ -17,7 +17,7 @@ public class MapLivingEntity extends MapEntity {
     private BufferedImage flag;
     Path path;
     double timeUntilMove = 0;
-    double timeBetweenMoves = 0.5;
+    double timeBetweenMoves = 0.1;
 
     public MapLivingEntity(Vector2D position, Vector2D size, double rotation, BufferedImage texture, TeamType team) {
         super(position, size, rotation, texture);
@@ -57,9 +57,10 @@ public class MapLivingEntity extends MapEntity {
     }
 
     @Override
-    public void onMouseClick3(GameMap map, Vector2D mouseMapPos) {
-        super.onMouseClick3(map, mouseMapPos);
-        path = map.getPath(this, mouseMapPos);
+    public void onMouseClick3(GameMap map, Vector2D mousePos) {
+        super.onMouseClick3(map, mousePos);
+        Vector2D mapPos = map.relativeToAbsolutePos(mousePos);
+        path = map.getPath(this, mapPos);
     }
 
     @Override

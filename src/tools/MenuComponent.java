@@ -28,7 +28,7 @@ public class MenuComponent extends JComponent
         super.paintComponent(g);
 
         // Draw all sprites
-        for (Sprite sprite : game.getSpriteIterator()) {
+        for (Sprite sprite : game.getMenuSpriteIterator()) {
             sprite.draw(g, this);
         }
     }
