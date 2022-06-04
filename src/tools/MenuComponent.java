@@ -20,7 +20,7 @@ public class MenuComponent extends JComponent
 
     @Override
     public Dimension getPreferredSize(){
-        return game.getScreenDimension();
+        return game.getMenuScreenDimension();
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MenuComponent extends JComponent
 
         // Draw all sprites
         for (Sprite sprite : game.getSpriteIterator()) {
-            //sprite.draw(g, this);
+            sprite.draw(g, this);
         }
     }
 }

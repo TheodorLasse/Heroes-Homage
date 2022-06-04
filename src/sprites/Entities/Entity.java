@@ -1,15 +1,17 @@
 package src.sprites.Entities;
 
-import src.tools.GameComponent;
 import src.GameMap;
 import src.tools.MapFocus;
 import src.tools.Rotation;
+import src.tools.ShortestPath;
 import src.tools.Vector2D;
 import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 public abstract class Entity implements Sprite {
     protected Vector2D position;
@@ -17,6 +19,7 @@ public abstract class Entity implements Sprite {
     protected Vector2D size;
     protected Rotation rotation;
     protected BufferedImage texture;
+    List<ShortestPath.Point> path;
 
     protected Entity(final Vector2D position, final Vector2D size, final double rotation, final BufferedImage texture){
         this.position = position;
@@ -48,11 +51,11 @@ public abstract class Entity implements Sprite {
         return texture;
     }
 
-    public boolean isOverlap(Vector2D mousePos){
-        double x = mousePos.getX();
-        double y = mousePos.getY();
-        boolean isWithinX = position.getX() <= x && x <= position.getX() + size.getX();
-        boolean isWithinY = position.getY() <= y && y <= position.getY() + size.getY();
+    public boolean isOverlap(Vector2D mapPos){
+        double x = mapPos.getX();
+        double y = mapPos.getY();
+        boolean isWithinX = relativePosition.getX() <= x && x <= relativePosition.getX() + size.getX();
+        boolean isWithinY = relativePosition.getY() <= y && y <= relativePosition.getY() + size.getY();
         return isWithinX && isWithinY;
     }
 
@@ -68,9 +71,13 @@ public abstract class Entity implements Sprite {
         this.rotation = rotation;
     }
 
-    @Override public void draw(final Graphics g, final GameComponent gc) {
+    @Override public void draw(final Graphics g, final JComponent gc) {
         g.drawImage(getTexture(), (int) relativePosition.getX() * GameMap.TILE_SIZE, (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
     }
 
-    public void onClick(){}
+    public void onClick(){
+    }
+
+    public void setPath(List<ShortestPath.Point> path){
+    }
 }

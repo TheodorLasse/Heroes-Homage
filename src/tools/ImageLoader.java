@@ -12,7 +12,7 @@ public class ImageLoader
 {
     public enum ImageName
     {
-        GRASS, ROCK, BLUE_FLAG, RED_FLAG, ERROR
+        GRASS, WATER, ROCK, BLUE_FLAG, RED_FLAG, ERROR
     }
 
     /**
@@ -23,6 +23,7 @@ public class ImageLoader
             Map.entry(ImageName.ROCK, "rock"),
             Map.entry(ImageName.BLUE_FLAG, "blue_flag"),
             Map.entry(ImageName.RED_FLAG, "red_flag"),
+            Map.entry(ImageName.WATER, "water"),
 
             Map.entry(ImageName.ERROR, "grass")
     );

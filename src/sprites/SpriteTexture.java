@@ -3,6 +3,7 @@ package src.sprites;
 import src.tools.*;
 
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -81,7 +82,7 @@ public class SpriteTexture implements Sprite
 	return size;
     }
 
-    @Override public void draw(final Graphics g, final GameComponent gc) {
+    @Override public void draw(final Graphics g, final JComponent gc) {
 		int positionX = (int) position.getX();
 		int positionY = (int) position.getY();
 		switch (spriteType) {

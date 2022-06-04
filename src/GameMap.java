@@ -3,6 +3,7 @@ package src;
 import src.sprites.Entities.*;
 import src.tools.ImageLoader;
 import src.tools.MapFocus;
+import src.tools.ShortestPath;
 import src.tools.Vector2D;
 import src.tools.input.GameKeyListener;
 import src.tools.input.Key;
@@ -15,8 +16,7 @@ import src.sprites.SpriteLayer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.AbstractMap;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
@@ -26,14 +26,15 @@ enum MapTileType { WATER, GRASS, ROAD, PAVEMENT, ERROR}
 
 public class GameMap implements GameKeyListener {
     public static final int TILE_SIZE = 20;
-    List<List<MapTileType>> mapTiles = null;
-    SpriteHandler mapSpriteHandler = null;
-    EntityHandler mapEntityHandler = null;
+    List<List<MapTileType>> mapTiles;
+    SpriteHandler mapSpriteHandler;
+    EntityHandler mapEntityHandler;
     BufferedImage background;
     Dimension mapSize = new Dimension(500,500);
     Dimension screenSize;
 
     MapFocus mapFocus;
+    Entity entityFocus;
 
     public GameMap(Dimension screenSize)
     {
@@ -43,12 +44,12 @@ public class GameMap implements GameKeyListener {
         mapEntityHandler = new EntityHandler();
         mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
         mapTiles = new ArrayList<>();
+        initBackground();
+
         mapEntityHandler.add(new MapEntity(new Vector2D(0,0), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(20,19), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
-        initBackground();
-
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(30,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
     }
 
     private void initBackground(){
@@ -59,11 +60,15 @@ public class GameMap implements GameKeyListener {
 
             for (int x = 0; x < mapSize.width; x++){
                 MapTileType type = MapTileType.GRASS;
+                if (y <= 5){
+                    type = MapTileType.WATER;
+                }
 
                 BufferedImage toDraw;
 
                 switch (type){
                     case GRASS -> toDraw = Game.imageLoader.getImage(ImageLoader.ImageName.GRASS);
+                    case WATER -> toDraw = Game.imageLoader.getImage(ImageLoader.ImageName.WATER);
                     default -> toDraw = Game.imageLoader.getImage(ImageLoader.ImageName.ERROR);
                 }
 
@@ -94,32 +99,63 @@ public class GameMap implements GameKeyListener {
         return iterList;
     }
 
-    public void onMouseClick(int x, int y){
-        Vector2D mousePos = new Vector2D(x, y);
-        Vector2D mouseMapFocus = Vector2D.getSum(mousePos, mapFocus.getPosition());
-        for (Entity mapEntity : mapEntityHandler.getIterator()) {
-            if (mapEntity.isOverlap(mouseMapFocus)){
-                mapEntity.onClick();
+    public void onMouseClick(Vector2D mousePos, int mouseButton){
+        Vector2D mouseMapPos = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
+        Vector2D mouseMapFocus = Vector2D.getSum(mouseMapPos, mapFocus.getPosition());
+        calculateBlocked();
+        if(mouseButton == 1){
+            for (Entity mapEntity : mapEntityHandler.getIterator()) {
+                if (mapEntity.isOverlap(mouseMapFocus)){
+                    entityFocus = mapEntity;
+                    return;
+                }
             }
         }
+        else if (mouseButton == 3){
+            setPath(entityFocus, mouseMapPos);
+        }
+    }
+
+    private void setPath(Entity entity, Vector2D mapPos){
+        int[][] map = calculateBlocked();
+        ShortestPath.Point entityPoint = new ShortestPath.Point((int) entity.getPosition().getX(), (int) entity.getPosition().getY(), null);
+        ShortestPath.Point destinationPoint = new ShortestPath.Point((int) mapPos.getX(), (int) mapPos.getY(), null);
+        List<ShortestPath.Point> path = ShortestPath.FindPath(map, entityPoint, destinationPoint);
+        entity.setPath(path);
+    }
+
+    private int[][] calculateBlocked(){
+        int[][] blocked = new int[mapSize.height][mapSize.width];
+        for (int y = 0; y < mapTiles.size(); y++){
+            for (int x = 0; x < mapTiles.get(y).size(); x++){
+                switch (mapTiles.get(y).get(x)){
+                    case WATER -> blocked[y][x] = 1;
+                }
+            }
+        }
+
+        for (Entity mapEntity : mapEntityHandler.getIterator()) {
+            Vector2D entityPos = mapEntity.getPosition();
+            for (int y = 0; y < mapEntity.getSize().getY(); y++) {
+                for (int x = 0; x < mapEntity.getSize().getX(); x++) {
+                    int iterX = (int)(entityPos.getX() + x);
+                    int iterY = (int)(entityPos.getY() + y);
+                    blocked[iterY][iterX] = 1;
+                }
+            }
+        }
+
+        return blocked;
     }
 
     @Override
     public void onKeyEvent(KeyEvent e, AbstractMap<Key, KeyState> keyStates) {
         double mapShiftStep = 1;
         switch (e.getKey()) {
-            case LEFT -> {
-                mapFocus.addX(-mapShiftStep);
-            }
-            case RIGHT -> {
-                mapFocus.addX(mapShiftStep);
-            }
-            case UP -> {
-                mapFocus.addY(-mapShiftStep);
-            }
-            case DOWN -> {
-                mapFocus.addY(mapShiftStep);
-            }
+            case LEFT -> mapFocus.addX(-mapShiftStep);
+            case RIGHT -> mapFocus.addX(mapShiftStep);
+            case UP -> mapFocus.addY(-mapShiftStep);
+            case DOWN -> mapFocus.addY(mapShiftStep);
         }
     }
 }

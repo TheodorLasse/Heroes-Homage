@@ -15,12 +15,11 @@ public class GameComponent extends JComponent
 
     public GameComponent(Game game){
         this.game = game;
-
     }
 
     @Override
     public Dimension getPreferredSize(){
-        return game.getScreenDimension();
+        return game.getMapScreenDimension();
     }
 
     @Override

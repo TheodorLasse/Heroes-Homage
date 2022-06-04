@@ -2,6 +2,7 @@ package src;
 
 import src.tools.GameComponent;
 import src.tools.ImageLoader;
+import src.tools.MenuComponent;
 import src.tools.Vector2D;
 import src.tools.input.KeyHandler;
 import src.tools.input.MouseListener;
@@ -27,13 +28,13 @@ import java.util.logging.*;
 public class Game {
     private final Logger logger = Logger.getLogger("");
     private static final double MAX_FPS = 144;
-    private static final Random RND = new Random();
     public static final ImageLoader imageLoader = new ImageLoader();
     private SpriteHandler spriteHandler;
     private GameMap gameMap;
 
 
-    GameComponent gc;
+    public GameComponent gameComponent;
+    public MenuComponent menuComponent;
     Dimension screenSize;
 
     public Game(){
@@ -50,14 +51,16 @@ public class Game {
 
 
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        gc = new GameComponent(this);
+        gameComponent = new GameComponent(this);
+        menuComponent = new MenuComponent(this);
         spriteHandler = new SpriteHandler();
         gameMap = new GameMap(screenSize);
         setUpWindow();
 
-        final KeyHandler keyHandler = new KeyHandler(gc);
+        final KeyHandler keyHandler = new KeyHandler(gameComponent);
         keyHandler.addKeyListener(gameMap);
-        final MouseListener mouseListener = new MouseListener(gc, this);
+        final MouseListener mouseMapListener = new MouseListener(gameComponent, this);
+        final MouseListener mouseMenuListener = new MouseListener(menuComponent, this);
     }
 
     /**
@@ -76,7 +79,7 @@ public class Game {
             lastUpdate = startTime;
 
             update(new DeltaTime(deltaTime));
-            gc.repaint();
+            gameComponent.repaint();
 
             long totalTime = System.nanoTime() - startTime;
             // To avoid using 100% of cpu core when not needed, sleep until the minimum frame time is met
@@ -96,8 +99,12 @@ public class Game {
         gameMap.update(deltaTime);
     }
 
-    public Dimension getScreenDimension(){
+    public Dimension getMapScreenDimension(){
         return new Dimension((int)(screenSize.width * 0.8), screenSize.height);
+    }
+
+    public Dimension getMenuScreenDimension(){
+        return new Dimension((int)(screenSize.width * 0.2), screenSize.height);
     }
 
 
@@ -122,9 +129,8 @@ public class Game {
         JFrame frame = new JFrame("Game");
         frame.setLayout(new BorderLayout());
         Container contentPane = frame.getContentPane();
-        contentPane.add(gc, BorderLayout.WEST);
-        GameComponent gc1 = new GameComponent(this);
-        contentPane.add(gc1, BorderLayout.EAST);
+        contentPane.add(gameComponent, BorderLayout.WEST);
+        contentPane.add(menuComponent, BorderLayout.EAST);
         frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
@@ -152,7 +158,11 @@ public class Game {
         }
     }
 
-    public void mouseClick(int x, int y) {
+    public void mouseMapClick(Vector2D mousePos, int mouseButton) {
+        gameMap.onMouseClick(mousePos, mouseButton);
+    }
+
+    public void mouseMenuClick(Vector2D mousePos) {
 
     }
 }

@@ -1,7 +1,7 @@
 package src.sprites;
-import src.tools.GameComponent;
 import src.tools.Vector2D;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -13,5 +13,5 @@ public interface Sprite
     Vector2D getSize();
     double getRotation();
 
-    void draw(final Graphics g, final GameComponent gc);
+    void draw(final Graphics g, final JComponent gc);
 }

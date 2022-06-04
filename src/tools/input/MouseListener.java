@@ -1,6 +1,9 @@
 package src.tools.input;
 
 import src.Game;
+import src.tools.GameComponent;
+import src.tools.MenuComponent;
+import src.tools.Vector2D;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -13,7 +16,15 @@ public class MouseListener {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
-                game.mouseClick(e.getX(), e.getY());
+
+                Vector2D mousePos = new Vector2D(e.getX(), e.getY());
+                if(pane == game.gameComponent){
+                    game.mouseMapClick(mousePos, e.getButton());
+                }
+                else if (pane == game.menuComponent){
+                    game.mouseMenuClick(mousePos);
+                }
+
             }
         });
     }
