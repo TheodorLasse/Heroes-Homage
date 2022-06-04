@@ -16,19 +16,6 @@ public class PathMap implements TileBasedMap{
         this.visited = new boolean[mapSize.width][mapSize.height];
     }
 
-    public void clearVisited() {
-        for(int x = 0; x < this.getWidthInTiles(); ++x) {
-            for(int y = 0; y < this.getHeightInTiles(); ++y) {
-                this.visited[x][y] = false;
-            }
-        }
-
-    }
-
-    public void setTerrain(int[][] newTerrain){
-        terrain = newTerrain;
-    }
-
     @Override
     public int getWidthInTiles() {
         return mapSize.width;

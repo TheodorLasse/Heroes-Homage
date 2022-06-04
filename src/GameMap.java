@@ -56,9 +56,10 @@ public class GameMap implements GameKeyListener {
         mapTiles = new ArrayList<>();
         initBackground();
 
-        mapEntityHandler.add(new MapEntity(new Vector2D(0,0), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        mapEntityHandler.add(new MapEntity(new Vector2D(20,19), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        mapEntityHandler.add(new MapEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        mapEntityHandler.add(new MapEntity(new Vector2D(10,10), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        mapEntityHandler.add(new MapEntity(new Vector2D(11,11), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        //mapEntityHandler.add(new MapEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(30,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
     }
 
@@ -73,7 +74,7 @@ public class GameMap implements GameKeyListener {
 
             for (int y = 0; y < mapSize.height; y++){
                 MapTileType type = MapTileType.GRASS;
-                if (y <= 5){
+                if (y <= 5 || x <= 5 || y + 5 >= mapSize.height || x + 5 >= mapSize.width){
                     type = MapTileType.WATER;
                 }
 
@@ -125,7 +126,6 @@ public class GameMap implements GameKeyListener {
     public void onMouseClick(Vector2D mousePos, int mouseButton){
         Vector2D mouseMapPos = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
         Vector2D mouseMapFocus = Vector2D.getSum(mouseMapPos, mapFocus.getPosition());
-        getBlocked();
         if(mouseButton == 1){
             for (Entity mapEntity : mapEntityHandler.getIterator()) {
                 if (mapEntity.isOverlap(mouseMapFocus)){
@@ -156,9 +156,9 @@ public class GameMap implements GameKeyListener {
      */
     private int[][] getBlocked(){
         int[][] blocked = new int[mapSize.width][mapSize.height];
-        for (int y = 0; y < mapTiles.size(); y++){
-            for (int x = 0; x < mapTiles.get(y).size(); x++){
-                switch (mapTiles.get(y).get(x)){
+        for (int x = 0; x < mapTiles.size(); x++){
+            for (int y = 0; y < mapTiles.get(x).size(); y++){
+                switch (mapTiles.get(x).get(y)){
                     case WATER -> blocked[x][y] = 1;
                 }
             }
@@ -166,11 +166,11 @@ public class GameMap implements GameKeyListener {
 
         for (Entity mapEntity : mapEntityHandler.getIterator()) {
             Vector2D entityPos = mapEntity.getPosition();
-            for (int y = 0; y < mapEntity.getSize().getY(); y++) {
-                for (int x = 0; x < mapEntity.getSize().getX(); x++) {
+            for (int x = 0; x < mapEntity.getSize().getX(); x++) {
+                for (int y = 0; y < mapEntity.getSize().getY(); y++) {
                     int iterX = (int)(entityPos.getX() + x);
                     int iterY = (int)(entityPos.getY() + y);
-                    blocked[iterY][iterX] = 1;
+                    blocked[iterX][iterY] = 1;
                 }
             }
         }
