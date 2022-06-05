@@ -2,7 +2,7 @@ package src.map;
 
 import src.Game;
 import src.sprites.SpriteTexture;
-import src.tools.ImageLoader;
+import src.tools.image.ImageLoader;
 import src.tools.MapTileType;
 import src.tools.Vector2D;
 

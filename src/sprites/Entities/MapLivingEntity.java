@@ -2,7 +2,7 @@ package src.sprites.Entities;
 
 import src.Game;
 import src.map.GameMap;
-import src.tools.ImageLoader;
+import src.tools.image.ImageLoader;
 import src.map.MapFocus;
 import src.tools.Vector2D;
 import src.tools.aStar.Path;

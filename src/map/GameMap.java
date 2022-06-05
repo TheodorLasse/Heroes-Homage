@@ -8,6 +8,7 @@ import src.tools.aStar.AStarPathFinder;
 import src.tools.aStar.Path;
 import src.tools.aStar.PathFinder;
 import src.tools.aStar.PathMap;
+import src.tools.image.ImageLoader;
 import src.tools.input.GameKeyListener;
 import src.tools.input.Key;
 import src.tools.input.KeyEvent;
@@ -29,7 +30,7 @@ public class GameMap implements GameKeyListener {
     private final List<List<MapTileType>> mapTiles;
     private final SpriteHandler mapSpriteHandler;
     private final EntityHandler mapEntityHandler;
-    private BufferedImage background;
+    private final BufferedImage background;
 
     private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
@@ -58,22 +59,28 @@ public class GameMap implements GameKeyListener {
             mapSpriteHandler.add(borderTexture, SpriteLayer.LAST);
         }
 
-
+        /*
         mapEntityHandler.add(new MapEntity(new Vector2D(10,10), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(11,11), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        */
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
     }
 
-
-
     /**
-     * Update GameMap
-     * @param deltaTime how long since last update
+     * Sets the centre of the MapFocus object to position, i.e "the middle" of the screen is set to position
+     * @param position position which MapFocus centres on
      */
-    public void update(DeltaTime deltaTime){
-        mapSpriteHandler.update(deltaTime);
-        mapEntityHandler.update(deltaTime, mapFocus);
+    public void setMapFocusCentre(Vector2D position) {
+        mapFocus.setCentre(position);
+    }
+
+    public Dimension getMapSize() {
+        return mapSize;
+    }
+
+    public BufferedImage getBackground(){
+        return background;
     }
 
     /**
@@ -90,27 +97,6 @@ public class GameMap implements GameKeyListener {
         tempList.addAll(mapSpriteHandler.getLayerIterator(SpriteLayer.LAST));
 
         return tempList;
-    }
-
-    /**
-     * When GameMap is clicked on by mouse
-     * @param mousePos position of mouse on JFrame
-     * @param mouseButton button that was pressed
-     */
-    public void onMouseClick(Vector2D mousePos, int mouseButton){
-        Vector2D mouseMapFocus = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
-        Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
-        if(mouseButton == 1){
-            for (Entity mapEntity : mapEntityHandler.getIterator()) {
-                if (mapEntity.isOverlap(mouseAbsolutePos)){
-                    entityFocus = mapEntity;
-                    return;
-                }
-            }
-        }
-        else if (mouseButton == 3 && entityFocus != null){
-            entityFocus.onMouseClick3(this, mouseAbsolutePos);
-        }
     }
 
     /**
@@ -159,6 +145,36 @@ public class GameMap implements GameKeyListener {
      */
     public Vector2D relativeToAbsolutePos(Vector2D relativePos){
         return Vector2D.getSum(relativePos, mapFocus.getPosition());
+    }
+
+    /**
+     * Update GameMap
+     * @param deltaTime how long since last update
+     */
+    public void update(DeltaTime deltaTime){
+        mapSpriteHandler.update(deltaTime);
+        mapEntityHandler.update(deltaTime, mapFocus);
+    }
+
+    /**
+     * When GameMap is clicked on by mouse
+     * @param mousePos position of mouse on JFrame
+     * @param mouseButton button that was pressed
+     */
+    public void onMouseClick(Vector2D mousePos, int mouseButton){
+        Vector2D mouseMapFocus = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
+        Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
+        if(mouseButton == 1){
+            for (Entity mapEntity : mapEntityHandler.getIterator()) {
+                if (mapEntity.isOverlap(mouseAbsolutePos)){
+                    entityFocus = mapEntity;
+                    return;
+                }
+            }
+        }
+        else if (mouseButton == 3 && entityFocus != null){
+            entityFocus.onMouseClick3(this, mouseAbsolutePos);
+        }
     }
 
     @Override

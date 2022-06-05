@@ -132,10 +132,10 @@ public class Vector2D
     }
 
 	/**
-	 * Returns a new vector with the first vector minus the second vector
+	 * Returns a new vector of the first vector minus the second vector
 	 *
-	 * @param vector1
-	 * @param vector2
+	 * @param vector1 First vector
+	 * @param vector2 Second vector
 	 *
 	 * @return A new vector.
 	 */

@@ -5,7 +5,7 @@ import src.sprites.Entities.EntityHandler;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;
-import src.tools.ImageLoader;
+import src.tools.image.ImageLoader;
 import src.tools.Vector2D;
 
 import java.awt.*;

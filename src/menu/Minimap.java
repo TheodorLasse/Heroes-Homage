@@ -1,29 +1,53 @@
 package src.menu;
 
 import src.Game;
+import src.map.GameMap;
+import src.tools.Vector2D;
+import src.tools.image.BufferedImageResize;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+
 
 public class Minimap extends JLabel {
+    private final GameMap gameMap;
+    private final BufferedImage minimapImage;
+
+    private final static int MINIMAP_OFFSET = 40;
     /**
      * The minimap of the game, located on the gameMenu component
      * @param game The main game object
      */
     public Minimap(Game game){
-        this.setBorder(new LineBorder(Color.RED, 2));
-        int minimapOffset = 40;
-        int minimapSize = game.getMenuScreenDimension().width - minimapOffset * 2;
-        this.setBounds(minimapOffset, minimapOffset, minimapSize, minimapSize);
+        int minimapSize = game.getMenuScreenDimension().width - MINIMAP_OFFSET * 2;
+
+        this.gameMap = game.getGameMap();
+        minimapImage = BufferedImageResize.resize(gameMap.getBackground(), minimapSize, minimapSize);
+
+        this.setBorder(new LineBorder(Color.BLACK, 1));
+        this.setBounds(MINIMAP_OFFSET, MINIMAP_OFFSET, minimapSize, minimapSize);
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
+                double percentX = (double)e.getX() / minimapSize;
+                double percentY = (double)e.getY() / minimapSize;
+                Dimension gameMapDim = gameMap.getMapSize();
+                double mapFocusX = percentX * gameMapDim.width;
+                double mapFocusY = percentY * gameMapDim.height;
 
+                gameMap.setMapFocusCentre(new Vector2D(mapFocusX, mapFocusY));
             }
         });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(minimapImage, 0, 0, null);
     }
 }

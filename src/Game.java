@@ -3,7 +3,7 @@ package src;
 import src.map.GameMap;
 import src.menu.GameMenu;
 import src.tools.GameComponent;
-import src.tools.ImageLoader;
+import src.tools.image.ImageLoader;
 import src.tools.MenuComponent;
 import src.tools.Vector2D;
 import src.tools.input.KeyHandler;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
 /**
- * Class where the entire game is implemented. Controlls the central update function which controls deltaTime and calls upon all other
+ * Class where the entire game is implemented. Controls the central update function which controls deltaTime and calls upon all other
  * updates etc. Also initializes the game, shows the window and the end screen.
  */
 
@@ -30,8 +30,8 @@ public class Game {
     private final GameMap gameMap;
     private final GameMenu gameMenu;
 
-    public GameComponent gameComponent;
-    public MenuComponent menuComponent;
+    private final GameComponent gameComponent;
+    private final MenuComponent menuComponent;
     Dimension screenSize;
 
     public Game(){
@@ -47,10 +47,10 @@ public class Game {
         }
 
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        gameComponent = new GameComponent(this);
-        menuComponent = new MenuComponent(this);
         gameMap = new GameMap(getMapScreenDimension());
+        gameComponent = new GameComponent(this);
         gameMenu = new GameMenu(getMenuScreenDimension());
+        menuComponent = new MenuComponent(this);
         setUpWindow();
         setUpIO();
     }
@@ -99,7 +99,6 @@ public class Game {
         return new Dimension((int)(screenSize.width * 0.2), screenSize.height);
     }
 
-
     /**
      * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
      * sprites are drawn before entities, etc
@@ -114,6 +113,10 @@ public class Game {
      */
     public Iterable<Sprite> getMenuSpriteIterator() {
         return gameMenu.getIterator();
+    }
+
+    public GameMap getGameMap(){
+        return this.gameMap;
     }
 
     /**
