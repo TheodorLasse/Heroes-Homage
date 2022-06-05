@@ -2,6 +2,8 @@ package src;
 
 import src.map.GameMap;
 import src.menu.GameMenu;
+import src.player.PlayerTeam;
+import src.player.PlayerTeamColors;
 import src.tools.GameComponent;
 import src.tools.image.ImageLoader;
 import src.tools.MenuComponent;
@@ -15,6 +17,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
@@ -33,6 +36,8 @@ public class Game {
     private final GameComponent gameComponent;
     private final MenuComponent menuComponent;
     Dimension screenSize;
+
+    private ArrayList<PlayerTeam> playerTeamList;
 
     public Game(){
         setUpLogger();
@@ -53,6 +58,7 @@ public class Game {
         menuComponent = new MenuComponent(this);
         setUpWindow();
         setUpIO();
+        setUpGame();
     }
 
     /**
@@ -117,6 +123,17 @@ public class Game {
 
     public GameMap getGameMap(){
         return this.gameMap;
+    }
+
+    /**
+     * Sets up game parameters such as the player teams
+     */
+    private void setUpGame(){
+        playerTeamList = new ArrayList<>();
+        for (PlayerTeamColors color: PlayerTeamColors.values()){
+            playerTeamList.add(new PlayerTeam(color));
+            if (playerTeamList.size() == gameMap.getTeamCount()) break;
+        }
     }
 
     /**

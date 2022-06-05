@@ -40,6 +40,8 @@ public class GameMap implements GameKeyListener {
     private final MapFocus mapFocus;
     private Entity entityFocus;
 
+    private int teamCount;
+
     /**
      * Object that contains and controls the map
      * @param screenSize Size of the screen allocated for GameMap
@@ -65,6 +67,7 @@ public class GameMap implements GameKeyListener {
         mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         */
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
+        teamCount = 1;
     }
 
     /**
@@ -81,6 +84,10 @@ public class GameMap implements GameKeyListener {
 
     public BufferedImage getBackground(){
         return background;
+    }
+
+    public int getTeamCount(){
+        return teamCount;
     }
 
     /**

@@ -29,7 +29,6 @@ public class Minimap extends JLabel {
         minimapImage = BufferedImageResize.resize(gameMap.getBackground(), minimapSize, minimapSize);
 
         this.setBorder(new LineBorder(Color.BLACK, 1));
-        this.setBounds(MINIMAP_OFFSET, MINIMAP_OFFSET, minimapSize, minimapSize);
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -48,6 +47,9 @@ public class Minimap extends JLabel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(minimapImage, 0, 0, null);
+        Dimension labelSize = this.getSize();
+        int posX = (int)((labelSize.width - minimapImage.getWidth()) * 0.5);
+        int posY = (int)((labelSize.height - minimapImage.getHeight()) * 0.5);
+        g.drawImage(minimapImage, posX, posY, null);
     }
 }
