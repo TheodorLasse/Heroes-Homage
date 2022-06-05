@@ -1,9 +1,8 @@
 package src;
 
 import src.sprites.Entities.*;
-import src.tools.ImageLoader;
-import src.tools.MapFocus;
-import src.tools.Vector2D;
+import src.sprites.SpriteTexture;
+import src.tools.*;
 import src.tools.aStar.AStarPathFinder;
 import src.tools.aStar.Path;
 import src.tools.aStar.PathFinder;
@@ -24,14 +23,13 @@ import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
-enum MapTileType { WATER, GRASS, ROAD, PAVEMENT, ERROR}
 
 public class GameMap implements GameKeyListener {
     public static final int TILE_SIZE = 20;
     private final List<List<MapTileType>> mapTiles;
     private final SpriteHandler mapSpriteHandler;
     private final EntityHandler mapEntityHandler;
-    private final BufferedImage background;
+    private BufferedImage background;
 
     private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
@@ -48,51 +46,26 @@ public class GameMap implements GameKeyListener {
     public GameMap(Dimension screenSize)
     {
         this.screenSize = screenSize;
-        background = new BufferedImage(mapSize.width * TILE_SIZE, mapSize.height * TILE_SIZE, TYPE_INT_ARGB);
         finder = new AStarPathFinder(new PathMap(mapSize, null), 500, true);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
         mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
         mapTiles = new ArrayList<>();
-        initBackground();
+
+        MapSpriteFactory factory = new MapSpriteFactory(screenSize);
+        background = factory.createBackground(mapSize, mapTiles);
+        for (SpriteTexture border:factory.createBorders()) {
+            mapSpriteHandler.add(border, SpriteLayer.LAST);
+        }
+
 
         mapEntityHandler.add(new MapEntity(new Vector2D(10,10), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(11,11), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        //mapEntityHandler.add(new MapEntity(new Vector2D(21,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(30,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
     }
 
-    /**
-     * Initialize the background image
-     */
-    private void initBackground(){
-        Graphics g = background.getGraphics();
-        for (int x = 0; x < mapSize.width; x++){
-            List<MapTileType> current;
-            current = new ArrayList<>(mapSize.height);
 
-            for (int y = 0; y < mapSize.height; y++){
-                MapTileType type = MapTileType.GRASS;
-                if (y <= 5 || x <= 5 || y + 5 >= mapSize.height || x + 5 >= mapSize.width){
-                    type = MapTileType.WATER;
-                }
-
-                BufferedImage toDraw;
-
-                switch (type){
-                    case GRASS -> toDraw = Game.imageLoader.getImage(ImageLoader.ImageName.GRASS);
-                    case WATER -> toDraw = Game.imageLoader.getImage(ImageLoader.ImageName.WATER);
-                    default -> toDraw = Game.imageLoader.getImage(ImageLoader.ImageName.ERROR);
-                }
-
-                g.drawImage(toDraw, x * TILE_SIZE, y * TILE_SIZE, null);
-                current.add(type);
-            }
-
-            mapTiles.add(current);
-        }
-    }
 
     /**
      * Update GameMap
@@ -112,10 +85,11 @@ public class GameMap implements GameKeyListener {
                 (int) (mapFocus.getX() * TILE_SIZE), (int) (mapFocus.getY() * TILE_SIZE),
                 (int) (screenSize.getWidth()), ((int) screenSize.getHeight())));
 
-        ArrayList<Sprite> iterList = new ArrayList<>(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
-        iterList.addAll(mapEntityHandler.getIterator());
+        ArrayList<Sprite> tempList = new ArrayList<>(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
+        tempList.addAll(mapEntityHandler.getIterator());
+        tempList.addAll(mapSpriteHandler.getLayerIterator(SpriteLayer.LAST));
 
-        return iterList;
+        return tempList;
     }
 
     /**
@@ -124,18 +98,18 @@ public class GameMap implements GameKeyListener {
      * @param mouseButton button that was pressed
      */
     public void onMouseClick(Vector2D mousePos, int mouseButton){
-        Vector2D mouseMapPos = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
-        Vector2D mouseMapFocus = Vector2D.getSum(mouseMapPos, mapFocus.getPosition());
+        Vector2D mouseMapFocus = new Vector2D(mousePos.getX() / TILE_SIZE, mousePos.getY() / TILE_SIZE);
+        Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
         if(mouseButton == 1){
             for (Entity mapEntity : mapEntityHandler.getIterator()) {
-                if (mapEntity.isOverlap(mouseMapFocus)){
+                if (mapEntity.isOverlap(mouseAbsolutePos)){
                     entityFocus = mapEntity;
                     return;
                 }
             }
         }
         else if (mouseButton == 3 && entityFocus != null){
-            entityFocus.onMouseClick3(this, mouseMapPos);
+            entityFocus.onMouseClick3(this, mouseAbsolutePos);
         }
     }
 
@@ -178,6 +152,11 @@ public class GameMap implements GameKeyListener {
         return blocked;
     }
 
+    /**
+     * Converts the position relative to mapFocus to the absolute position of the map
+     * @param relativePos Position on the mapFocus
+     * @return relativePos's position on the map in absolute terms
+     */
     public Vector2D relativeToAbsolutePos(Vector2D relativePos){
         return Vector2D.getSum(relativePos, mapFocus.getPosition());
     }
@@ -190,6 +169,7 @@ public class GameMap implements GameKeyListener {
             case RIGHT -> mapFocus.addX(mapShiftStep);
             case UP -> mapFocus.addY(-mapShiftStep);
             case DOWN -> mapFocus.addY(mapShiftStep);
+            case ESC -> entityFocus = null;
         }
     }
 }

@@ -57,10 +57,9 @@ public class MapLivingEntity extends MapEntity {
     }
 
     @Override
-    public void onMouseClick3(GameMap map, Vector2D mousePos) {
-        super.onMouseClick3(map, mousePos);
-        Vector2D mapPos = map.relativeToAbsolutePos(mousePos);
-        path = map.getPath(this, mapPos);
+    public void onMouseClick3(GameMap map, Vector2D mouseMapPos) {
+        super.onMouseClick3(map, mouseMapPos);
+        path = map.getPath(this, mouseMapPos);
     }
 
     @Override

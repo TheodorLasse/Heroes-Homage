@@ -1,6 +1,8 @@
 package src.tools;
 
 import javax.imageio.ImageIO;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,7 +14,7 @@ public class ImageLoader
 {
     public enum ImageName
     {
-        GRASS, WATER, ROCK, BLUE_FLAG, RED_FLAG, ERROR
+        GRASS, WATER, ROCK, BLUE_FLAG, RED_FLAG, MENU_BACKGROUND, GAME_BORDER, GAME_BORDER_CORNER, ERROR
     }
 
     /**
@@ -24,6 +26,9 @@ public class ImageLoader
             Map.entry(ImageName.BLUE_FLAG, "blue_flag"),
             Map.entry(ImageName.RED_FLAG, "red_flag"),
             Map.entry(ImageName.WATER, "water"),
+            Map.entry(ImageName.MENU_BACKGROUND, "menu_background"),
+            Map.entry(ImageName.GAME_BORDER, "game_border"),
+            Map.entry(ImageName.GAME_BORDER_CORNER, "game_border_corner"),
 
             Map.entry(ImageName.ERROR, "grass")
     );
@@ -71,5 +76,26 @@ public class ImageLoader
      */
     private static BufferedImage loadImage(URL url) throws IOException {
         return ImageIO.read(url);
+    }
+
+    /**
+     * Rotates an image
+     * @param rotation Radians of rotation
+     * @param image Image to rotate
+     * @param at AffineTransform object
+     * @return Rotated image
+     */
+    public static BufferedImage rotateImage(double rotation, BufferedImage image, AffineTransform at) {
+        final double sin = Math.abs(Math.sin(rotation));
+        final double cos = Math.abs(Math.cos(rotation));
+        final int w = (int) Math.floor(image.getWidth() * cos + image.getHeight() * sin);
+        final int h = (int) Math.floor(image.getHeight() * cos + image.getWidth() * sin);
+        final BufferedImage rotatedImage = new BufferedImage(w, h, image.getType());
+        at.translate((double) w / 2, (double) h / 2);
+        at.rotate(rotation, 0, 0);
+        at.translate((double) -image.getWidth() / 2, (double) -image.getHeight() / 2);
+        final AffineTransformOp rotateOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        rotateOp.filter(image, rotatedImage);
+        return rotatedImage;
     }
 }

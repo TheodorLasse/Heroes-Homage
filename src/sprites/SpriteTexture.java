@@ -5,6 +5,8 @@ import src.tools.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 /**
  * Class representing a texture that can draw itself but is not an Entity, i.e not an object that interacts physically with other objects.
@@ -16,7 +18,7 @@ public class SpriteTexture implements Sprite
     private Vector2D size = new Vector2D();
     private Rotation rotation;
     private SpriteType spriteType;
-    private Image image = null;
+    private BufferedImage image = null;
     private Color color = null;
     private String textString = null;
     private int fontSize = DEFAULT_FONT_SIZE;
@@ -25,13 +27,14 @@ public class SpriteTexture implements Sprite
     /**
      * Create SpriteTexture with image.
      */
-    public SpriteTexture(Vector2D position, double rotation, Image image) {
+    public SpriteTexture(Vector2D position, double rotation, BufferedImage image) {
 		this.spriteType = SpriteType.IMAGE;
-		this.image = image;
 		this.position = position;
-		this.size = new Vector2D(position.getX() + image.getWidth(null), position.getY() + image.getHeight(null));
 		this.rotation = new Rotation(rotation);
-
+		if(rotation != 0){
+			this.image = ImageLoader.rotateImage(rotation, image, new AffineTransform());
+		}else this.image = image;
+		this.size = new Vector2D(position.getX() + image.getWidth(null), position.getY() + image.getHeight(null));
     }
 
     /**

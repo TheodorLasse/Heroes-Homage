@@ -24,7 +24,7 @@ public class MapFocus {
     public void addX(double x) {
         position.addX(x);
         if (position.getX() > mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE)
-            position.setX(mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE);
+            position.setX((int)(mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE));
         else if (position.getX() < 0)
             position.setX(0);
     }
@@ -32,7 +32,7 @@ public class MapFocus {
     public void addY(double y){
         position.addY(y);
         if (position.getY() > mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE)
-            position.setY(mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE);
+            position.setY((int)(mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE));
         else if (position.getY() < 0)
             position.setY(0);
     }

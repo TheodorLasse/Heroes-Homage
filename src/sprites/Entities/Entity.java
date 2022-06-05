@@ -55,8 +55,8 @@ public abstract class Entity implements Sprite, Mover {
     public boolean isOverlap(Vector2D mapPos){
         double x = mapPos.getX();
         double y = mapPos.getY();
-        boolean isWithinX = relativePosition.getX() <= x && x <= relativePosition.getX() + size.getX();
-        boolean isWithinY = relativePosition.getY() <= y && y <= relativePosition.getY() + size.getY();
+        boolean isWithinX = position.getX() <= x && x <= position.getX() + size.getX();
+        boolean isWithinY = position.getY() <= y && y <= position.getY() + size.getY();
         return isWithinX && isWithinY;
     }
 

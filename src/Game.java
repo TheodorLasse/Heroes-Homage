@@ -75,6 +75,7 @@ public class Game {
 
             update(new DeltaTime(deltaTime));
             gameComponent.repaint();
+            menuComponent.repaint();
 
             long totalTime = System.nanoTime() - startTime;
             // To avoid using 100% of cpu core when not needed, sleep until the minimum frame time is met
@@ -107,11 +108,7 @@ public class Game {
      * sprites are drawn before entities, etc
      */
     public Iterable<Sprite> getGameSpriteIterator() {
-        List<Sprite> sprites = new ArrayList<>();
-
-        sprites.addAll(gameMap.getIterator());
-
-        return sprites;
+        return gameMap.getIterator();
     }
 
     /**
@@ -119,8 +116,7 @@ public class Game {
      * order is the order sprites get drawn.
      */
     public Iterable<Sprite> getMenuSpriteIterator() {
-        List<Sprite> sprites = new ArrayList<>();
-        return sprites;
+        return gameMenu.getIterator();
     }
 
     /**
@@ -133,6 +129,8 @@ public class Game {
         contentPane.add(gameComponent, BorderLayout.WEST);
         contentPane.add(menuComponent, BorderLayout.EAST);
         frame.setResizable(false);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setUndecorated(true);
         frame.pack();
         frame.setVisible(true);
     }
