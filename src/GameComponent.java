@@ -1,4 +1,4 @@
-package src.tools;
+package src;
 
 import src.Game;
 import src.sprites.Sprite;

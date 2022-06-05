@@ -16,4 +16,8 @@ public class PlayerResources {
         assert amount >= 0;
         resources.replace(resource, resources.get(resource) + amount);
     }
+
+    public int getValue(Resource r){
+        return resources.get(r);
+    }
 }

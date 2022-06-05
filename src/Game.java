@@ -4,9 +4,9 @@ import src.map.GameMap;
 import src.menu.GameMenu;
 import src.player.PlayerTeam;
 import src.player.PlayerTeamColors;
-import src.tools.GameComponent;
+import src.player.Resource;
 import src.tools.image.ImageLoader;
-import src.tools.MenuComponent;
+import src.menu.MenuComponent;
 import src.tools.Vector2D;
 import src.tools.input.KeyHandler;
 import src.tools.time.DeltaTime;
@@ -56,9 +56,9 @@ public class Game {
         gameComponent = new GameComponent(this);
         gameMenu = new GameMenu(getMenuScreenDimension());
         menuComponent = new MenuComponent(this);
+        setUpGame();
         setUpWindow();
         setUpIO();
-        setUpGame();
     }
 
     /**
@@ -123,6 +123,10 @@ public class Game {
 
     public GameMap getGameMap(){
         return this.gameMap;
+    }
+
+    public PlayerTeam getCurrentPlayer(){
+        return playerTeamList.get(0);
     }
 
     /**

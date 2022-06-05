@@ -6,4 +6,8 @@ public class PlayerTeam {
     public PlayerTeam(PlayerTeamColors color){
         playerResources = new PlayerResources();
     }
+
+    public PlayerResources getPlayerResources() {
+        return playerResources;
+    }
 }

@@ -28,7 +28,6 @@ public class Minimap extends JLabel {
         this.gameMap = game.getGameMap();
         minimapImage = BufferedImageResize.resize(gameMap.getBackground(), minimapSize, minimapSize);
 
-        this.setBorder(new LineBorder(Color.BLACK, 1));
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {

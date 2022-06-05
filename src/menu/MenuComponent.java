@@ -1,4 +1,4 @@
-package src.tools;
+package src.menu;
 
 import src.Game;
 import src.menu.Minimap;
@@ -26,7 +26,7 @@ public class MenuComponent extends JComponent
         GridBagConstraints c = new GridBagConstraints();
 
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.ipady = 400;
+        c.ipady = 300;
         c.weightx = 0.5;
         c.gridwidth = 4;
         c.gridx = 0;
@@ -35,7 +35,11 @@ public class MenuComponent extends JComponent
         JLabel minimap = new Minimap(game);
         this.add(minimap, c);
 
-        JLabel resources = new MenuResources();
+        c.ipady = 200;
+        c.gridy = 1;
+
+        JLabel resources = new MenuResources(game);
+        this.add(resources, c);
     }
 
     @Override
