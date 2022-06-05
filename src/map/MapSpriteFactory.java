@@ -1,7 +1,10 @@
-package src.tools;
+package src.map;
 
 import src.Game;
 import src.sprites.SpriteTexture;
+import src.tools.ImageLoader;
+import src.tools.MapTileType;
+import src.tools.Vector2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -10,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static src.GameMap.TILE_SIZE;
+import static src.map.GameMap.TILE_SIZE;
 
 public class MapSpriteFactory {
     Dimension screenSize;

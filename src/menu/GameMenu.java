@@ -1,15 +1,16 @@
-package src;
+package src.menu;
 
+import src.Game;
 import src.sprites.Entities.EntityHandler;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;
 import src.tools.ImageLoader;
+import src.tools.Vector2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
@@ -52,5 +53,8 @@ public class GameMenu {
      */
     public ArrayList<Sprite> getIterator(){
         return menuSpriteHandler.getLayerIterator(SpriteLayer.FIRST);
+    }
+
+    public void onMouseClick(Vector2D mousePos, int button) {
     }
 }

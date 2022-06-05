@@ -1,8 +1,10 @@
-package src.tools;
+package src.map;
+
+import src.tools.Vector2D;
 
 import java.awt.*;
 
-import static src.GameMap.TILE_SIZE;
+import static src.map.GameMap.TILE_SIZE;
 
 public class MapFocus {
     Vector2D position;

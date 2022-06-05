@@ -1,7 +1,6 @@
 package src.sprites.Entities;
 
-import src.tools.MapFocus;
-import src.tools.Vector2D;
+import src.map.MapFocus;
 import src.sprites.Sprite;
 import src.tools.time.DeltaTime;
 

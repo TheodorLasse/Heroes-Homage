@@ -1,19 +1,16 @@
 package src.sprites.Entities;
 
-import src.Game;
-import src.GameMap;
-import src.tools.MapFocus;
+import src.map.GameMap;
+import src.map.MapFocus;
 import src.tools.Rotation;
 import src.tools.Vector2D;
 import src.tools.aStar.Mover;
-import src.tools.aStar.Path;
 import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 public abstract class Entity implements Sprite, Mover {
     protected Vector2D position;

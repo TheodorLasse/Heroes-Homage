@@ -1,9 +1,9 @@
 package src.sprites.Entities;
 
 import src.Game;
-import src.GameMap;
+import src.map.GameMap;
 import src.tools.ImageLoader;
-import src.tools.MapFocus;
+import src.map.MapFocus;
 import src.tools.Vector2D;
 import src.tools.aStar.Path;
 import src.tools.time.DeltaTime;

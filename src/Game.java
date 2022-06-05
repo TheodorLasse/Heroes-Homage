@@ -1,21 +1,20 @@
 package src;
 
+import src.map.GameMap;
+import src.menu.GameMenu;
 import src.tools.GameComponent;
 import src.tools.ImageLoader;
 import src.tools.MenuComponent;
 import src.tools.Vector2D;
 import src.tools.input.KeyHandler;
-import src.tools.input.MouseListener;
 import src.tools.time.DeltaTime;
 import src.sprites.Sprite;
-import src.sprites.SpriteHandler;
-import src.sprites.SpriteLayer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 
@@ -30,7 +29,6 @@ public class Game {
     public static final ImageLoader imageLoader = new ImageLoader();
     private final GameMap gameMap;
     private final GameMenu gameMenu;
-
 
     public GameComponent gameComponent;
     public MenuComponent menuComponent;
@@ -47,7 +45,6 @@ public class Game {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
         }
-
 
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         gameComponent = new GameComponent(this);
@@ -160,16 +157,22 @@ public class Game {
     private void setUpIO() {
         final KeyHandler keyHandler = new KeyHandler(gameComponent);
         keyHandler.addKeyListener(gameMap);
-        new MouseListener(gameComponent, this);
-        new MouseListener(menuComponent, this);
-    }
-
-    public void mouseMapClick(Vector2D mousePos, int mouseButton) {
-        gameMap.onMouseClick(mousePos, mouseButton);
-    }
-
-    public void mouseMenuClick(Vector2D mousePos) {
-
+        gameComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                Vector2D mousePos = new Vector2D(e.getX(), e.getY());
+                gameMap.onMouseClick(mousePos, e.getButton());
+            }
+        });
+        menuComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
+                Vector2D mousePos = new Vector2D(e.getX(), e.getY());
+                gameMenu.onMouseClick(mousePos, e.getButton());
+            }
+        });
     }
 }
 

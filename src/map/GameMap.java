@@ -1,5 +1,6 @@
-package src;
+package src.map;
 
+import src.Game;
 import src.sprites.Entities.*;
 import src.sprites.SpriteTexture;
 import src.tools.*;
@@ -21,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
-import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
 
 public class GameMap implements GameKeyListener {
@@ -54,8 +54,8 @@ public class GameMap implements GameKeyListener {
 
         MapSpriteFactory factory = new MapSpriteFactory(screenSize);
         background = factory.createBackground(mapSize, mapTiles);
-        for (SpriteTexture border:factory.createBorders()) {
-            mapSpriteHandler.add(border, SpriteLayer.LAST);
+        for (SpriteTexture borderTexture:factory.createBorders()) {
+            mapSpriteHandler.add(borderTexture, SpriteLayer.LAST);
         }
 
 

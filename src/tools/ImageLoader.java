@@ -14,7 +14,7 @@ public class ImageLoader
 {
     public enum ImageName
     {
-        GRASS, WATER, ROCK, BLUE_FLAG, RED_FLAG, MENU_BACKGROUND, GAME_BORDER, GAME_BORDER_CORNER, ERROR
+        GRASS, WATER, ROCK, BLUE_FLAG, RED_FLAG, MENU_BACKGROUND, GAME_BORDER, GAME_BORDER_CORNER, RESOURCE_PANEL, ERROR
     }
 
     /**
@@ -29,6 +29,7 @@ public class ImageLoader
             Map.entry(ImageName.MENU_BACKGROUND, "menu_background"),
             Map.entry(ImageName.GAME_BORDER, "game_border"),
             Map.entry(ImageName.GAME_BORDER_CORNER, "game_border_corner"),
+            Map.entry(ImageName.RESOURCE_PANEL, "resource_panel"),
 
             Map.entry(ImageName.ERROR, "grass")
     );
