@@ -1,10 +1,23 @@
 package src.player;
 
-public class PlayerTeam {
-    PlayerResources playerResources;
+import src.sprites.Entities.LivingEntity;
 
-    public PlayerTeam(PlayerTeamColors color){
-        playerResources = new PlayerResources();
+import java.util.ArrayList;
+import java.util.List;
+
+public class PlayerTeam {
+    private final PlayerResources playerResources;
+    private final PlayerTeamColor teamColor;
+    private final List<LivingEntity> playerMapLivingEntities;
+
+    public PlayerTeam(PlayerTeamColor teamColor){
+        this.playerResources = new PlayerResources();
+        this.teamColor = teamColor;
+        this.playerMapLivingEntities = new ArrayList<>();
+    }
+
+    public PlayerTeamColor getTeamColor() {
+        return teamColor;
     }
 
     public PlayerResources getPlayerResources() {

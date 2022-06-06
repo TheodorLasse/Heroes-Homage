@@ -1,6 +1,8 @@
 package src.map;
 
 import src.Game;
+import src.player.PlayerTeam;
+import src.player.PlayerTeamColor;
 import src.sprites.Entities.*;
 import src.sprites.SpriteTexture;
 import src.tools.*;
@@ -27,33 +29,35 @@ import java.util.List;
 
 public class GameMap implements GameKeyListener {
     public static final int TILE_SIZE = 20;
+    private final Game game;
     private final List<List<MapTileType>> mapTiles;
     private final SpriteHandler mapSpriteHandler;
     private final EntityHandler mapEntityHandler;
     private final BufferedImage background;
+    private final PathFinder finder;
 
     private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
 
-    private final PathFinder finder;
-
     private final MapFocus mapFocus;
     private Entity entityFocus;
 
-    private int teamCount;
+    private final int teamCount = 2;
 
     /**
      * Object that contains and controls the map
      * @param screenSize Size of the screen allocated for GameMap
      */
-    public GameMap(Dimension screenSize)
+    public GameMap(Game game, Dimension screenSize, ArrayList<PlayerTeam> playerTeamList)
     {
+        this.game = game;
         this.screenSize = screenSize;
         finder = new AStarPathFinder(new PathMap(mapSize, null), 500, true);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
         mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
         mapTiles = new ArrayList<>();
+        initPlayerTeams(playerTeamList);
 
         MapSpriteFactory factory = new MapSpriteFactory(screenSize);
         background = factory.createBackground(mapSize, mapTiles);
@@ -61,13 +65,9 @@ public class GameMap implements GameKeyListener {
             mapSpriteHandler.add(borderTexture, SpriteLayer.LAST);
         }
 
-        /*
-        mapEntityHandler.add(new MapEntity(new Vector2D(10,10), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        mapEntityHandler.add(new MapEntity(new Vector2D(11,11), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
-        */
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), TeamType.BLUE));
-        teamCount = 1;
+        mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), playerTeamList.get(0)));
+        mapEntityHandler.add(new LivingEntity(new Vector2D(10,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), game, playerTeamList.get(0), mapEntityHandler));
+        mapEntityHandler.add(new LivingEntity(new Vector2D(14,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), game, playerTeamList.get(1), mapEntityHandler));
     }
 
     /**
@@ -78,16 +78,23 @@ public class GameMap implements GameKeyListener {
         mapFocus.setCentre(position);
     }
 
+    /**
+     * Initializes the game object's list of players since the number would depend on the map
+     * @param playerTeamList list to be updated with players
+     */
+    private void initPlayerTeams(ArrayList<PlayerTeam> playerTeamList){
+        for (PlayerTeamColor color: PlayerTeamColor.values()){
+            playerTeamList.add(new PlayerTeam(color));
+            if (playerTeamList.size() == teamCount) break;
+        }
+    }
+
     public Dimension getMapSize() {
         return mapSize;
     }
 
     public BufferedImage getBackground(){
         return background;
-    }
-
-    public int getTeamCount(){
-        return teamCount;
     }
 
     /**

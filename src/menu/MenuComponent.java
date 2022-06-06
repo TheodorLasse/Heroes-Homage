@@ -1,12 +1,14 @@
 package src.menu;
 
 import src.Game;
-import src.menu.Minimap;
-import src.menu.MenuResources;
 import src.sprites.Sprite;
+import src.tools.image.ImageLoader;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
 /**
  * Class for drawing on the JFrame created in the Game class.
@@ -14,10 +16,12 @@ import java.awt.*;
 public class MenuComponent extends JComponent
 {
     private final Game game;
-    private JLabel resources;
+    private final BufferedImage menuBackground;
 
     public MenuComponent(Game game){
         this.game = game;
+
+        menuBackground = new MenuBackground(getPreferredSize()).getMenuBackground();
 
         GridBagLayout grid = new GridBagLayout();
         this.setLayout(grid);
@@ -42,6 +46,8 @@ public class MenuComponent extends JComponent
         this.add(resources, c);
     }
 
+
+
     @Override
     public Dimension getPreferredSize(){
         return game.getMenuScreenDimension();
@@ -49,11 +55,7 @@ public class MenuComponent extends JComponent
 
     @Override
     protected void paintComponent(Graphics g){
+        g.drawImage(menuBackground, 0, 0, null);
         super.paintComponent(g);
-
-        // Draw all sprites
-        for (Sprite sprite : game.getMenuSpriteIterator()) {
-            sprite.draw(g, this);
-        }
     }
 }

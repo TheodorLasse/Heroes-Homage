@@ -18,6 +18,7 @@ public abstract class Entity implements Sprite, Mover {
     protected Vector2D size;
     protected Rotation rotation;
     protected BufferedImage texture;
+    protected EntityType entityType;
 
     protected Entity(final Vector2D position, final Vector2D size, final double rotation, final BufferedImage texture){
         this.position = position;
@@ -25,6 +26,7 @@ public abstract class Entity implements Sprite, Mover {
         this.size = size;
         this.rotation = new Rotation(rotation);
         this.texture = texture;
+        setEntityType(EntityType.NONE);
     }
     /**
      * Updates the entity.
@@ -49,6 +51,10 @@ public abstract class Entity implements Sprite, Mover {
         return texture;
     }
 
+    protected EntityType getEntityType(){
+        return entityType;
+    }
+
     public boolean isOverlap(Vector2D mapPos){
         double x = mapPos.getX();
         double y = mapPos.getY();
@@ -69,11 +75,12 @@ public abstract class Entity implements Sprite, Mover {
         this.rotation = rotation;
     }
 
-    @Override public void draw(final Graphics g, final JComponent gc) {
-        g.drawImage(getTexture(), (int) relativePosition.getX() * GameMap.TILE_SIZE, (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
+    protected void setEntityType(EntityType entityType){
+        this.entityType = entityType;
     }
 
-    public void onClick(){
+    @Override public void draw(final Graphics g, final JComponent gc) {
+        g.drawImage(getTexture(), (int) relativePosition.getX() * GameMap.TILE_SIZE, (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
     }
 
     public void onMouseClick3(GameMap map, Vector2D mouseMapPos){

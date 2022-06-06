@@ -1,10 +1,10 @@
 package src;
 
+import src.combat.CombatComponent;
+import src.combat.GameCombat;
 import src.map.GameMap;
-import src.menu.GameMenu;
 import src.player.PlayerTeam;
-import src.player.PlayerTeamColors;
-import src.player.Resource;
+import src.player.PlayerTeamColor;
 import src.tools.image.ImageLoader;
 import src.menu.MenuComponent;
 import src.tools.Vector2D;
@@ -31,13 +31,16 @@ public class Game {
     private static final double MAX_FPS = 144;
     public static final ImageLoader imageLoader = new ImageLoader();
     private final GameMap gameMap;
-    private final GameMenu gameMenu;
+    private final GameCombat gameCombat;
 
+    private CardLayout card;
+    private JPanel panelContainer;
     private final GameComponent gameComponent;
     private final MenuComponent menuComponent;
+    private final CombatComponent combatComponent;
     Dimension screenSize;
 
-    private ArrayList<PlayerTeam> playerTeamList;
+    private final ArrayList<PlayerTeam> playerTeamList = new ArrayList<>();
 
     public Game(){
         setUpLogger();
@@ -52,11 +55,12 @@ public class Game {
         }
 
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        gameMap = new GameMap(getMapScreenDimension());
+        gameMap = new GameMap(this, getMapScreenDimension(), playerTeamList);
+        gameCombat = new GameCombat(this);
         gameComponent = new GameComponent(this);
-        gameMenu = new GameMenu(getMenuScreenDimension());
         menuComponent = new MenuComponent(this);
-        setUpGame();
+        combatComponent = new CombatComponent(this);
+
         setUpWindow();
         setUpIO();
     }
@@ -94,7 +98,20 @@ public class Game {
      * Updates the game.
      */
     private void update(DeltaTime deltaTime) {
-        gameMap.update(deltaTime);
+        if (gameCombat.isBattle()){
+            gameMap.update(deltaTime);
+        }else {
+            gameCombat.update(deltaTime);
+        }
+    }
+
+    public void newCombat(Army attacker, Army defender){
+        card.show(panelContainer, "combat");
+        gameCombat.setUpBattlefield(attacker, defender);
+    }
+
+    public void finishCombat(){
+        card.show(panelContainer, "map");
     }
 
     public Dimension getMapScreenDimension(){
@@ -105,20 +122,16 @@ public class Game {
         return new Dimension((int)(screenSize.width * 0.2), screenSize.height);
     }
 
+    public Dimension getCombatScreenDimension(){
+        return new Dimension(screenSize);
+    }
+
     /**
      * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
      * sprites are drawn before entities, etc
      */
     public Iterable<Sprite> getGameSpriteIterator() {
         return gameMap.getIterator();
-    }
-
-    /**
-     * Returns an iterable var of all sprites. Basically merges all sprites into one list for menuComponent. The list's
-     * order is the order sprites get drawn.
-     */
-    public Iterable<Sprite> getMenuSpriteIterator() {
-        return gameMenu.getIterator();
     }
 
     public GameMap getGameMap(){
@@ -130,25 +143,28 @@ public class Game {
     }
 
     /**
-     * Sets up game parameters such as the player teams
-     */
-    private void setUpGame(){
-        playerTeamList = new ArrayList<>();
-        for (PlayerTeamColors color: PlayerTeamColors.values()){
-            playerTeamList.add(new PlayerTeam(color));
-            if (playerTeamList.size() == gameMap.getTeamCount()) break;
-        }
-    }
-
-    /**
      * Creates the game window.
      */
     private void setUpWindow() {
         JFrame frame = new JFrame("Game");
-        frame.setLayout(new BorderLayout());
-        Container contentPane = frame.getContentPane();
-        contentPane.add(gameComponent, BorderLayout.WEST);
-        contentPane.add(menuComponent, BorderLayout.EAST);
+        card = new CardLayout();
+        panelContainer = new JPanel();
+        panelContainer.setLayout(card);
+
+        JPanel mapJPanel = new JPanel();
+        mapJPanel.setLayout(new BorderLayout());
+        mapJPanel.add(gameComponent, BorderLayout.WEST);
+        mapJPanel.add(menuComponent, BorderLayout.EAST);
+
+        JPanel combatJPanel = new JPanel();
+        combatJPanel.setLayout(new BorderLayout());
+        combatJPanel.add(combatComponent, BorderLayout.CENTER);
+
+        panelContainer.add(mapJPanel, "map");
+        panelContainer.add(combatJPanel, "combat");
+
+        frame.add(panelContainer);
+
         frame.setResizable(false);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
@@ -189,12 +205,12 @@ public class Game {
                 gameMap.onMouseClick(mousePos, e.getButton());
             }
         });
-        menuComponent.addMouseListener(new MouseAdapter() {
+        combatComponent.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 Vector2D mousePos = new Vector2D(e.getX(), e.getY());
-                gameMenu.onMouseClick(mousePos, e.getButton());
+                //TODO add onMouseClick to combat screen
             }
         });
     }
