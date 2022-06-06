@@ -134,6 +134,14 @@ public class Game {
         return gameMap.getIterator();
     }
 
+    /**
+     * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
+     * sprites are drawn before entities, etc
+     */
+    public Iterable<Sprite> getCombatSpriteIterator() {
+        return gameCombat.getIterator();
+    }
+
     public GameMap getGameMap(){
         return this.gameMap;
     }

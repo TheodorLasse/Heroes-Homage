@@ -21,5 +21,10 @@ public class CombatComponent extends JComponent {
     @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
+
+        // Draw all sprites
+        for (Sprite sprite : game.getCombatSpriteIterator()) {
+            sprite.draw(g, this);
+        }
     }
 }
