@@ -4,12 +4,11 @@ import src.tools.Vector2D;
 
 import java.awt.*;
 
-import static src.map.GameMap.TILE_SIZE;
-
 public class MapFocus {
-    Vector2D position;
-    Dimension screenSize;
-    Dimension mapSize;
+    private Vector2D position;
+    private final Dimension screenSize;
+    private final Dimension mapSize;
+    private final int tileSize;
 
     /**
      * Controls which part of the map is visible on screen
@@ -17,10 +16,11 @@ public class MapFocus {
      * @param screenSize size of the screen which mapFocus is placed in, measured in pixels
      * @param mapSize size of the map which mapFocus is placed in, measured in tile coords
      */
-    public MapFocus(Vector2D position, Dimension screenSize, Dimension mapSize){
+    public MapFocus(Vector2D position, Dimension screenSize, Dimension mapSize, int tileSize){
         this.position = position;
         this.screenSize = screenSize;
         this.mapSize = mapSize;
+        this.tileSize = tileSize;
     }
 
     /**
@@ -46,14 +46,13 @@ public class MapFocus {
      * @param position new position of this object
      */
     public void setPosition(Vector2D position){
-        Vector2D intPosition = new Vector2D((int)position.getX(), (int)position.getY());
-        this.position = intPosition;
+        this.position = new Vector2D((int)position.getX(), (int)position.getY());
         setWithinBoundsX();
         setWithinBoundsY();
     }
 
     public void setCentre(Vector2D centrePosition){
-        Vector2D centreOffset = new Vector2D((double)screenSize.width / TILE_SIZE * 0.5, (double)screenSize.height / TILE_SIZE * 0.5);
+        Vector2D centreOffset = new Vector2D((double)screenSize.width / tileSize * 0.5, (double)screenSize.height / tileSize * 0.5);
         Vector2D topLeftPosition = Vector2D.getDifference(centrePosition, centreOffset);
         setPosition(topLeftPosition);
     }
@@ -62,8 +61,8 @@ public class MapFocus {
      * If this object's X-position sets it outside of bounds, set it to the bound
      */
     private void setWithinBoundsX(){
-        if (position.getX() > mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE)
-            position.setX((int)(mapSize.getWidth() - screenSize.getWidth() / TILE_SIZE));
+        if (position.getX() > mapSize.getWidth() - screenSize.getWidth() / tileSize)
+            position.setX((int)(mapSize.getWidth() - screenSize.getWidth() / tileSize));
         else if (position.getX() < 0)
             position.setX(0);
     }
@@ -72,8 +71,8 @@ public class MapFocus {
      * If this object's Y-position sets it outside of bounds, set it to the bound
      */
     private void setWithinBoundsY(){
-        if (position.getY() > mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE)
-            position.setY((int)(mapSize.getHeight() - screenSize.getHeight() / TILE_SIZE));
+        if (position.getY() > mapSize.getHeight() - screenSize.getHeight() / tileSize)
+            position.setY((int)(mapSize.getHeight() - screenSize.getHeight() / tileSize));
         else if (position.getY() < 0)
             position.setY(0);
     }

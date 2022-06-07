@@ -99,9 +99,9 @@ public class Game {
      */
     private void update(DeltaTime deltaTime) {
         if (gameCombat.isBattle()){
-            gameMap.update(deltaTime);
-        }else {
             gameCombat.update(deltaTime);
+        }else {
+            gameMap.update(deltaTime);
         }
     }
 

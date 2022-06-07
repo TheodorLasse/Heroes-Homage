@@ -3,9 +3,9 @@ package src.sprites.Entities;
 import src.Army;
 import src.Game;
 import src.map.GameMap;
+import src.map.MapFocus;
 import src.player.PlayerTeam;
 import src.tools.image.ImageLoader;
-import src.map.MapFocus;
 import src.tools.Vector2D;
 import src.tools.aStar.Path;
 import src.tools.time.DeltaTime;
@@ -23,25 +23,31 @@ public class LivingEntity extends MapEntity {
     double timeUntilMove = 0;
     double timeBetweenMoves = 0.2;
 
-
+    /**
+     * A unit on the GameMap that can move, belongs to a team and has an army
+     * @param position Entity's position
+     * @param texture Entity's texture, i.e BufferedImage
+     * @param game The game object which this Entity calls on for starting combat
+     * @param team Entity's team
+     * @param mapEntityHandler EntityHandler which keeps track of Entities on the GameMap
+     */
     public LivingEntity(Vector2D position, BufferedImage texture, Game game, PlayerTeam team, EntityHandler mapEntityHandler) {
         super(position, texture, team);
         this.game = game;
         this.mapEntityHandler = mapEntityHandler;
+        this.army = new Army(team);
         setEntityType(EntityType.LIVING);
-        init();
-    }
 
-    private void init(){
         switch (playerTeam.getTeamColor()){
             case RED -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.RED_FLAG);
             case BLUE -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.BLUE_FLAG);
+            default -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.ERROR);
         }
     }
 
     @Override
-    public void update(DeltaTime deltaTime, MapFocus mapFocus) {
-        super.update(deltaTime, mapFocus);
+    public void update(DeltaTime deltaTime, MapFocus focus) {
+        super.update(deltaTime, focus);
         move(deltaTime);
     }
 

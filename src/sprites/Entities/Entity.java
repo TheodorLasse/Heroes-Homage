@@ -28,11 +28,13 @@ public abstract class Entity implements Sprite, Mover {
         this.texture = texture;
         setEntityType(EntityType.NONE);
     }
+
+    public void update(DeltaTime deltaTime) {}
     /**
-     * Updates the entity.
+     * Updates the entity. If there is a MapFocus object, use it to get relative position.
      */
-    public void update(DeltaTime deltaTime, MapFocus mapFocus) {
-        relativePosition = Vector2D.getDifference(position, mapFocus.getPosition());
+    public void update(DeltaTime deltaTime, MapFocus focus) {
+        relativePosition = Vector2D.getDifference(position, focus.getPosition());
     }
 
     @Override public Vector2D getPosition() {
@@ -79,11 +81,11 @@ public abstract class Entity implements Sprite, Mover {
         this.entityType = entityType;
     }
 
-    @Override public void draw(final Graphics g, final JComponent gc) {
-        g.drawImage(getTexture(), (int) relativePosition.getX() * GameMap.TILE_SIZE, (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
-    }
-
     public void onMouseClick3(GameMap map, Vector2D mouseMapPos){
 
+    }
+
+    public void setPosition(Vector2D position) {
+        this.position = position;
     }
 }

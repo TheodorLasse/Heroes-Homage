@@ -19,21 +19,21 @@ public class EntityHandler
 
 
     public EntityHandler() {
-	entities = new ArrayList<>();
-	toRemove = new ArrayList<>();
-	toAdd = new ArrayList<>();
+        entities = new ArrayList<>();
+        toRemove = new ArrayList<>();
+        toAdd = new ArrayList<>();
     }
 
     /**
      * Checks if a given Entity type exists within the entityhandler.
      */
     public <T> boolean isEntityTypeExisting(Class<T> type) {
-	for (Sprite s:getIterator()) {
-	    if (type.isAssignableFrom(s.getClass())){
-	        return true;
-	    }
-	}
-	return false;
+        for (Sprite s:getIterator()) {
+            if (type.isAssignableFrom(s.getClass())){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -41,13 +41,27 @@ public class EntityHandler
      *
      * @param deltaTime
      */
-    public void update(DeltaTime deltaTime, MapFocus mapFocus) {
-	// Update all entities
-	for (Entity entity : entities) {
-	    entity.update(deltaTime, mapFocus);
-	}
+    public void update(DeltaTime deltaTime) {
+        // Update all entities
+        for (Entity entity : entities) {
+            entity.update(deltaTime);
+        }
 
-	internalUpdate();
+        internalUpdate();
+    }
+
+    /**
+     * Updates the entity handler and all entities.
+     *
+     * @param deltaTime
+     */
+    public void update(DeltaTime deltaTime, MapFocus focus) {
+        // Update all entities
+        for (Entity entity : entities) {
+            entity.update(deltaTime, focus);
+        }
+
+        internalUpdate();
     }
 
     /**

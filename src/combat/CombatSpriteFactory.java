@@ -1,6 +1,7 @@
 package src.combat;
 
 import src.Game;
+import src.tools.Vector2D;
 import src.tools.image.ImageLoader;
 
 import java.awt.*;
@@ -41,7 +42,7 @@ public class CombatSpriteFactory {
         return background;
     }
 
-    public BufferedImage getCombatGrid(){
+    private BufferedImage getCombatGrid(){
         int height = GameCombat.ARENA_SIZE.height;
         int width = GameCombat.ARENA_SIZE.width;
         int gridOffset = top.getHeight() - bottom.getHeight();
@@ -60,5 +61,13 @@ public class CombatSpriteFactory {
             }
         }
         return grid;
+    }
+
+    public Vector2D getGridOffset(){
+        int gridOffsetY = top.getHeight() - bottom.getHeight();
+        int gridSquareLength = (int)(screenSize.getHeight() - gridOffsetY)/GameCombat.ARENA_SIZE.height;
+        int width = GameCombat.ARENA_SIZE.width;
+        int gridOffsetX = (int)((screenSize.width - gridSquareLength * width) * 0.5);
+        return new Vector2D(gridOffsetX, gridOffsetY);
     }
 }

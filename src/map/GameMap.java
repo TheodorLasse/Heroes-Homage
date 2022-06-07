@@ -55,7 +55,7 @@ public class GameMap implements GameKeyListener {
         finder = new AStarPathFinder(new PathMap(mapSize, null), 500, true);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
-        mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize);
+        mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize, TILE_SIZE);
         mapTiles = new ArrayList<>();
         initPlayerTeams(playerTeamList);
 
