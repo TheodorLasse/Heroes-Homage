@@ -1,8 +1,6 @@
 package src.sprites.Entities;
 
-import src.Army;
 import src.Game;
-import src.sprites.Entities.MapEntities.MapEntity;
 import src.tools.WindowFocus;
 import src.player.PlayerTeam;
 import src.tools.aStar.PathFinder;
@@ -16,31 +14,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class LivingEntity extends MapEntity {
-    private final Game game;
-    private Army army;
-    private final EntityHandler mapEntityHandler;
-    private BufferedImage flag;
-    private Path path;
-    double timeUntilMove = 0;
-    double timeBetweenMoves = 0.2;
+public abstract class LivingEntity extends Entity {
+    protected PlayerTeam team;
+    protected EntityHandler entityHandler;
+    protected BufferedImage flag;
+    protected Path path;
+    protected double timeUntilMove = 0;
+    protected double timeBetweenMoves = 0.2;
 
     /**
      * A unit on the GameMap that can move, belongs to a team and has an army
      * @param position Entity's position
      * @param texture Entity's texture, i.e BufferedImage
-     * @param game The game object which this Entity calls on for starting combat
      * @param team Entity's team
-     * @param mapEntityHandler EntityHandler which keeps track of Entities on the GameMap
+     * @param entityHandler EntityHandler which keeps track of Entities on the GameMap
      */
-    public LivingEntity(Vector2D position, BufferedImage texture, Game game, PlayerTeam team, EntityHandler mapEntityHandler) {
-        super(position, texture, team);
-        this.game = game;
-        this.mapEntityHandler = mapEntityHandler;
-        this.army = new Army(team);
+    public LivingEntity(Vector2D position, BufferedImage texture, PlayerTeam team, EntityHandler entityHandler) {
+        super(position, new Vector2D(1, 1), 0,texture);
+        this.entityHandler = entityHandler;
+        this.team = team;
         setEntityType(EntityType.LIVING);
 
-        switch (playerTeam.getTeamColor()){
+        switch (team.getTeamColor()){
             case RED -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.RED_FLAG);
             case BLUE -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.BLUE_FLAG);
             default -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.ERROR);
@@ -53,7 +48,7 @@ public class LivingEntity extends MapEntity {
         move(deltaTime);
     }
 
-    private void move(DeltaTime deltaTime){
+    protected void move(DeltaTime deltaTime){
         if (path == null || path.getLength() == 0) return;
 
         timeUntilMove -= deltaTime.getSeconds();
@@ -65,41 +60,29 @@ public class LivingEntity extends MapEntity {
         }
     }
 
-    private void interact(Vector2D position){
-        for (Entity entity : mapEntityHandler.getIterator()){
+    protected void interact(Vector2D position){
+        for (Entity entity : entityHandler.getIterator()){
             if (entity.isOverlap(position) && entity != this){
-                switch (entity.getEntityType()){
-                    case COLLECTABLE -> {
-
-                    }
-                    case LIVING -> {
-                        LivingEntity otherEntity = (LivingEntity) entity;
-                        if (otherEntity.getPlayerTeam() != this.playerTeam) {
-                            game.newCombat(this.army, otherEntity.getArmy());
-                        }
-                    }
-                    case NONE -> {
-                    }
-                }
+                interactAction(entity);
             }
         }
-
     }
 
-    public Army getArmy() {
-        return army;
+    protected void interactAction(Entity entity){
     }
 
     @Override
     public void onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
+        if (mouseRounded.getX() < 0 || mouseRounded.getY() < 0) return;
+
         Vector2D diff = Vector2D.getDifference(position, mouseRounded);
         if (diff.getLength() <= 1.42){
             interact(mouseMapPos);
         }
         finder.setMap(map);
         path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
-                (int)mouseMapPos.getX(), (int)mouseMapPos.getY());
+                (int)mouseRounded.getX(), (int)mouseRounded.getY());
     }
 
     @Override
@@ -108,5 +91,9 @@ public class LivingEntity extends MapEntity {
             g.drawImage(flag, (int) relativePosition.getX(), (int) relativePosition.getY(), gc);
         }
         super.draw(g, gc);
+    }
+
+    public PlayerTeam getPlayerTeam(){
+        return team;
     }
 }

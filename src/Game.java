@@ -217,7 +217,7 @@ public class Game {
             public void mousePressed(MouseEvent e) {
                 super.mousePressed(e);
                 Vector2D mousePos = new Vector2D(e.getX(), e.getY());
-                //TODO add onMouseClick to combat screen
+                gameCombat.onMouseClick(mousePos, e.getButton());
             }
         });
     }

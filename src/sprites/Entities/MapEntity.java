@@ -1,4 +1,4 @@
-package src.sprites.Entities.MapEntities;
+package src.sprites.Entities;
 
 import src.map.GameMap;
 import src.player.PlayerTeam;

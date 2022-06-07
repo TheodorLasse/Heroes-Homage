@@ -2,31 +2,35 @@ package src.combat;
 
 import src.Army;
 import src.Game;
-import src.sprites.Entities.CombatEntity;
-import src.sprites.Entities.Entity;
-import src.sprites.Entities.EntityHandler;
+import src.sprites.Entities.*;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;
 import src.tools.Vector2D;
 import src.tools.WindowFocus;
+import src.tools.aStar.AStarPathFinder;
+import src.tools.aStar.PathFinder;
+import src.tools.aStar.PathMap;
 import src.tools.time.DeltaTime;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public class GameCombat {
-    public static final Dimension ARENA_SIZE = new Dimension(15, 10);
+    public static final Dimension ARENA_SIZE = new Dimension(18, 10);
     private final Game game;
     private Army attacker, defender;
     private final SpriteHandler combatSpriteHandler;
     private final EntityHandler combatEntityHandler;
     private final WindowFocus focus;
+    private LivingEntity entityFocus;
+    private PathFinder finder;
 
     public GameCombat(Game game){
         this.game = game;
         this.combatSpriteHandler = new SpriteHandler();
         this.combatEntityHandler = new EntityHandler();
+        finder = new AStarPathFinder(new PathMap(ARENA_SIZE, null), 50, true);
         CombatSpriteFactory factory = new CombatSpriteFactory(game.getCombatScreenDimension());
 
         int gridTile = factory.getGridSquareLength();
@@ -54,12 +58,19 @@ public class GameCombat {
     public void setUpBattlefield(Army attacker, Army defender){
         this.attacker = attacker;
         this.defender = defender;
+        attacker.setCombatEntityHandler(combatEntityHandler);
+        defender.setCombatEntityHandler(combatEntityHandler);
 
-        for (CombatEntity entity : attacker.getCombatEntities()){
+        int i = 0;
+        for (CombatLivingEntity entity : attacker.getCombatEntities()){
             combatEntityHandler.add(entity);
+            entity.setPosition(attacker.getStartingPositions().get(i));
+            i++;
         }
-        for (CombatEntity entity : defender.getCombatEntities()){
+        for (CombatLivingEntity entity : defender.getCombatEntities()){
             combatEntityHandler.add(entity);
+            entity.setPosition(defender.getStartingPositions().get(i));
+            i++;
         }
     }
 
@@ -71,5 +82,48 @@ public class GameCombat {
 
     public boolean isBattle(){
         return attacker != null;
+    }
+
+    public void onMouseClick(Vector2D mousePos, int mouseButton) {
+        Vector2D mouseMapFocus = new Vector2D(mousePos.getX() / focus.getTileSize(), mousePos.getY() / focus.getTileSize());
+        Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
+        if(mouseButton == 1){
+            for (Entity entity : combatEntityHandler.getIterator()) {
+                if (entity.isOverlap(mouseAbsolutePos) && entity.getEntityType() == EntityType.LIVING){
+                    entityFocus = (LivingEntity)entity;
+                    return;
+                }
+            }
+        }
+        else if (mouseButton == 3 && entityFocus != null){
+            PathMap map = new PathMap(ARENA_SIZE, getBlocked());
+            entityFocus.onMouseClick3(map, finder, mouseAbsolutePos);
+        }
+    }
+
+    private int[][] getBlocked() {
+        int[][] blocked = new int[ARENA_SIZE.width][ARENA_SIZE.height];
+
+        for (Entity mapEntity : combatEntityHandler.getIterator()) {
+            Vector2D entityPos = mapEntity.getPosition();
+            for (int x = 0; x < mapEntity.getSize().getX(); x++) {
+                for (int y = 0; y < mapEntity.getSize().getY(); y++) {
+                    int iterX = (int)(entityPos.getX() + x);
+                    int iterY = (int)(entityPos.getY() + y);
+                    blocked[iterX][iterY] = 1;
+                }
+            }
+        }
+
+        return blocked;
+    }
+
+    /**
+     * Converts the position relative to mapFocus to the absolute position of the map
+     * @param relativePos Position on the mapFocus
+     * @return relativePos's position on the map in absolute terms
+     */
+    public Vector2D relativeToAbsolutePos(Vector2D relativePos){
+        return Vector2D.getDifference(relativePos, focus.getPosition());
     }
 }
