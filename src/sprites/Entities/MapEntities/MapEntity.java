@@ -1,14 +1,16 @@
-package src.sprites.Entities;
+package src.sprites.Entities.MapEntities;
 
 import src.map.GameMap;
 import src.player.PlayerTeam;
+import src.sprites.Entities.Entity;
+import src.sprites.Entities.EntityType;
 import src.tools.Vector2D;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class MapEntity extends Entity{
+public class MapEntity extends Entity {
     protected PlayerTeam playerTeam;
 
     public MapEntity(final Vector2D position, final BufferedImage texture, final PlayerTeam playerTeam){
@@ -19,10 +21,5 @@ public class MapEntity extends Entity{
 
     public PlayerTeam getPlayerTeam(){
         return playerTeam;
-    }
-
-    @Override public void draw(final Graphics g, final JComponent gc) {
-        g.drawImage(getTexture(), (int) relativePosition.getX() * GameMap.TILE_SIZE,
-                (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
     }
 }

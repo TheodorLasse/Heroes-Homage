@@ -81,8 +81,7 @@ public class Game {
             lastUpdate = startTime;
 
             update(new DeltaTime(deltaTime));
-            gameComponent.repaint();
-            menuComponent.repaint();
+            panelContainer.repaint();
 
             long totalTime = System.nanoTime() - startTime;
             // To avoid using 100% of cpu core when not needed, sleep until the minimum frame time is met
@@ -130,7 +129,7 @@ public class Game {
      * Returns an iterable var of all sprites. Basically merges all sprites into one list for gameComponent. The list's order matters,
      * sprites are drawn before entities, etc
      */
-    public Iterable<Sprite> getGameSpriteIterator() {
+    public Iterable<Sprite> getGameMapSpriteIterator() {
         return gameMap.getIterator();
     }
 

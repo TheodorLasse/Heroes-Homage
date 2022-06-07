@@ -11,6 +11,7 @@ public class CombatSpriteFactory {
     private final Dimension screenSize;
     private final BufferedImage top = Game.imageLoader.getImage(ImageLoader.ImageName.COMBAT_TOP);
     private final BufferedImage bottom = Game.imageLoader.getImage(ImageLoader.ImageName.COMBAT_BOTTOM);
+    private final int gridOffsetY = top.getHeight() - bottom.getHeight();
 
     public CombatSpriteFactory(Dimension screenSize){
         this.screenSize = screenSize;
@@ -35,9 +36,8 @@ public class CombatSpriteFactory {
             }
         }
 
-        int gridOffset = top.getHeight() - bottom.getHeight();
         BufferedImage grid = getCombatGrid();
-        g.drawImage(grid, (int)((screenSize.width - grid.getWidth()) * 0.5), gridOffset, null);
+        g.drawImage(grid, (int)((screenSize.width - grid.getWidth()) * 0.5), gridOffsetY, null);
 
         return background;
     }
@@ -45,8 +45,7 @@ public class CombatSpriteFactory {
     private BufferedImage getCombatGrid(){
         int height = GameCombat.ARENA_SIZE.height;
         int width = GameCombat.ARENA_SIZE.width;
-        int gridOffset = top.getHeight() - bottom.getHeight();
-        int gridSquareLength = (int)(screenSize.getHeight() - gridOffset)/GameCombat.ARENA_SIZE.height;
+        int gridSquareLength = getGridSquareLength();
 
         BufferedImage grid = new BufferedImage(gridSquareLength * width, gridSquareLength * height, BufferedImage.TYPE_INT_ARGB);
 
@@ -63,8 +62,11 @@ public class CombatSpriteFactory {
         return grid;
     }
 
+    public int getGridSquareLength(){
+        return (int)(screenSize.getHeight() - gridOffsetY)/GameCombat.ARENA_SIZE.height;
+    }
+
     public Vector2D getGridOffset(){
-        int gridOffsetY = top.getHeight() - bottom.getHeight();
         int gridSquareLength = (int)(screenSize.getHeight() - gridOffsetY)/GameCombat.ARENA_SIZE.height;
         int width = GameCombat.ARENA_SIZE.width;
         int gridOffsetX = (int)((screenSize.width - gridSquareLength * width) * 0.5);

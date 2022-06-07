@@ -1,6 +1,6 @@
 package src.sprites.Entities;
 
-import src.map.MapFocus;
+import src.tools.WindowFocus;
 import src.sprites.Sprite;
 import src.tools.time.DeltaTime;
 
@@ -55,7 +55,7 @@ public class EntityHandler
      *
      * @param deltaTime
      */
-    public void update(DeltaTime deltaTime, MapFocus focus) {
+    public void update(DeltaTime deltaTime, WindowFocus focus) {
         // Update all entities
         for (Entity entity : entities) {
             entity.update(deltaTime, focus);

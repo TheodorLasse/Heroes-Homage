@@ -1,6 +1,5 @@
 package src;
 
-import src.map.MapFocus;
 import src.player.PlayerTeam;
 import src.sprites.Entities.CombatEntity;
 import src.tools.Vector2D;

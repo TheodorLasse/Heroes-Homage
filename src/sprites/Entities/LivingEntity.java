@@ -2,9 +2,11 @@ package src.sprites.Entities;
 
 import src.Army;
 import src.Game;
-import src.map.GameMap;
-import src.map.MapFocus;
+import src.sprites.Entities.MapEntities.MapEntity;
+import src.tools.WindowFocus;
 import src.player.PlayerTeam;
+import src.tools.aStar.PathFinder;
+import src.tools.aStar.PathMap;
 import src.tools.image.ImageLoader;
 import src.tools.Vector2D;
 import src.tools.aStar.Path;
@@ -46,7 +48,7 @@ public class LivingEntity extends MapEntity {
     }
 
     @Override
-    public void update(DeltaTime deltaTime, MapFocus focus) {
+    public void update(DeltaTime deltaTime, WindowFocus focus) {
         super.update(deltaTime, focus);
         move(deltaTime);
     }
@@ -89,21 +91,21 @@ public class LivingEntity extends MapEntity {
     }
 
     @Override
-    public void onMouseClick3(GameMap map, Vector2D mouseMapPos) {
-        super.onMouseClick3(map, mouseMapPos);
+    public void onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
         Vector2D diff = Vector2D.getDifference(position, mouseRounded);
         if (diff.getLength() <= 1.42){
             interact(mouseMapPos);
         }
-        path = map.getPath(this, mouseMapPos);
-
+        finder.setMap(map);
+        path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
+                (int)mouseMapPos.getX(), (int)mouseMapPos.getY());
     }
 
     @Override
     public void draw(Graphics g, JComponent gc) {
         if(flag != null){
-            g.drawImage(flag, (int) relativePosition.getX() * GameMap.TILE_SIZE, (int) relativePosition.getY() * GameMap.TILE_SIZE, gc);
+            g.drawImage(flag, (int) relativePosition.getX(), (int) relativePosition.getY(), gc);
         }
         super.draw(g, gc);
     }

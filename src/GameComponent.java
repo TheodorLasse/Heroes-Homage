@@ -1,6 +1,5 @@
 package src;
 
-import src.Game;
 import src.sprites.Sprite;
 
 import javax.swing.*;
@@ -27,7 +26,7 @@ public class GameComponent extends JComponent
         super.paintComponent(g);
 
         // Draw all sprites
-        for (Sprite sprite : game.getGameSpriteIterator()) {
+        for (Sprite sprite : game.getGameMapSpriteIterator()) {
             sprite.draw(g, this);
         }
     }

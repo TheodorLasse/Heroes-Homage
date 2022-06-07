@@ -1,25 +1,23 @@
-package src.map;
-
-import src.tools.Vector2D;
+package src.tools;
 
 import java.awt.*;
 
-public class MapFocus {
+public class WindowFocus {
     private Vector2D position;
     private final Dimension screenSize;
-    private final Dimension mapSize;
+    private final Dimension gridSize;
     private final int tileSize;
 
     /**
      * Controls which part of the map is visible on screen
      * @param position top left corner of the mapFocus, measured in tile coords
      * @param screenSize size of the screen which mapFocus is placed in, measured in pixels
-     * @param mapSize size of the map which mapFocus is placed in, measured in tile coords
+     * @param gridSize size of the map which mapFocus is placed in, measured in tile coords
      */
-    public MapFocus(Vector2D position, Dimension screenSize, Dimension mapSize, int tileSize){
+    public WindowFocus(Vector2D position, Dimension screenSize, Dimension gridSize, int tileSize){
         this.position = position;
         this.screenSize = screenSize;
-        this.mapSize = mapSize;
+        this.gridSize = gridSize;
         this.tileSize = tileSize;
     }
 
@@ -61,8 +59,8 @@ public class MapFocus {
      * If this object's X-position sets it outside of bounds, set it to the bound
      */
     private void setWithinBoundsX(){
-        if (position.getX() > mapSize.getWidth() - screenSize.getWidth() / tileSize)
-            position.setX((int)(mapSize.getWidth() - screenSize.getWidth() / tileSize));
+        if (position.getX() > gridSize.getWidth() - screenSize.getWidth() / tileSize)
+            position.setX((int)(gridSize.getWidth() - screenSize.getWidth() / tileSize));
         else if (position.getX() < 0)
             position.setX(0);
     }
@@ -71,8 +69,8 @@ public class MapFocus {
      * If this object's Y-position sets it outside of bounds, set it to the bound
      */
     private void setWithinBoundsY(){
-        if (position.getY() > mapSize.getHeight() - screenSize.getHeight() / tileSize)
-            position.setY((int)(mapSize.getHeight() - screenSize.getHeight() / tileSize));
+        if (position.getY() > gridSize.getHeight() - screenSize.getHeight() / tileSize)
+            position.setY((int)(gridSize.getHeight() - screenSize.getHeight() / tileSize));
         else if (position.getY() < 0)
             position.setY(0);
     }
@@ -87,5 +85,9 @@ public class MapFocus {
 
     public Vector2D getPosition(){
         return position.copy();
+    }
+
+    public int getTileSize() {
+        return tileSize;
     }
 }

@@ -4,10 +4,10 @@ import src.Game;
 import src.player.PlayerTeam;
 import src.player.PlayerTeamColor;
 import src.sprites.Entities.*;
+import src.sprites.Entities.MapEntities.MapEntity;
 import src.sprites.SpriteTexture;
 import src.tools.*;
 import src.tools.aStar.AStarPathFinder;
-import src.tools.aStar.Path;
 import src.tools.aStar.PathFinder;
 import src.tools.aStar.PathMap;
 import src.tools.image.ImageLoader;
@@ -39,8 +39,8 @@ public class GameMap implements GameKeyListener {
     private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
 
-    private final MapFocus mapFocus;
-    private Entity entityFocus;
+    private final WindowFocus windowFocus;
+    private LivingEntity entityFocus;
 
     private final int teamCount = 2;
 
@@ -55,7 +55,7 @@ public class GameMap implements GameKeyListener {
         finder = new AStarPathFinder(new PathMap(mapSize, null), 500, true);
         mapSpriteHandler = new SpriteHandler();
         mapEntityHandler = new EntityHandler();
-        mapFocus = new MapFocus(new Vector2D(), screenSize, mapSize, TILE_SIZE);
+        windowFocus = new WindowFocus(new Vector2D(), screenSize, mapSize, TILE_SIZE);
         mapTiles = new ArrayList<>();
         initPlayerTeams(playerTeamList);
 
@@ -75,7 +75,7 @@ public class GameMap implements GameKeyListener {
      * @param position position which MapFocus centres on
      */
     public void setMapFocusCentre(Vector2D position) {
-        mapFocus.setCentre(position);
+        windowFocus.setCentre(position);
     }
 
     /**
@@ -103,7 +103,7 @@ public class GameMap implements GameKeyListener {
      */
     public ArrayList<Sprite> getIterator(){
         mapSpriteHandler.setBackground(background.getSubimage(
-                (int) (mapFocus.getX() * TILE_SIZE), (int) (mapFocus.getY() * TILE_SIZE),
+                (int) (windowFocus.getX() * TILE_SIZE), (int) (windowFocus.getY() * TILE_SIZE),
                 (int) (screenSize.getWidth()), ((int) screenSize.getHeight())));
 
         ArrayList<Sprite> tempList = new ArrayList<>(mapSpriteHandler.getLayerIterator(SpriteLayer.FIRST));
@@ -119,11 +119,11 @@ public class GameMap implements GameKeyListener {
      * @param mapPos position to which path goes
      * @return Array of Steps to reach mapPos
      */
-    public Path getPath(Entity entity, Vector2D mapPos){
+    /*public Path getPath(Entity entity, Vector2D mapPos){
         Vector2D entityPos = entity.getPosition();
         finder.setMap(mapSize, getBlocked());
         return finder.findPath(entity, (int)entityPos.getX(), (int)entityPos.getY(), (int)mapPos.getX(), (int)mapPos.getY());
-    }
+    }*/
 
     /**
      * Calculates and returns all blocked positions of the map, 1 = blocked, 0 = free
@@ -158,7 +158,7 @@ public class GameMap implements GameKeyListener {
      * @return relativePos's position on the map in absolute terms
      */
     public Vector2D relativeToAbsolutePos(Vector2D relativePos){
-        return Vector2D.getSum(relativePos, mapFocus.getPosition());
+        return Vector2D.getSum(relativePos, windowFocus.getPosition());
     }
 
     /**
@@ -167,7 +167,7 @@ public class GameMap implements GameKeyListener {
      */
     public void update(DeltaTime deltaTime){
         mapSpriteHandler.update(deltaTime);
-        mapEntityHandler.update(deltaTime, mapFocus);
+        mapEntityHandler.update(deltaTime, windowFocus);
     }
 
     /**
@@ -180,14 +180,15 @@ public class GameMap implements GameKeyListener {
         Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
         if(mouseButton == 1){
             for (Entity mapEntity : mapEntityHandler.getIterator()) {
-                if (mapEntity.isOverlap(mouseAbsolutePos)){
-                    entityFocus = mapEntity;
+                if (mapEntity.isOverlap(mouseAbsolutePos) && mapEntity.getEntityType() == EntityType.LIVING){
+                    entityFocus = (LivingEntity)mapEntity;
                     return;
                 }
             }
         }
         else if (mouseButton == 3 && entityFocus != null){
-            entityFocus.onMouseClick3(this, mouseAbsolutePos);
+            PathMap map = new PathMap(mapSize, getBlocked());
+            entityFocus.onMouseClick3(map, finder, mouseAbsolutePos);
         }
     }
 
@@ -195,10 +196,10 @@ public class GameMap implements GameKeyListener {
     public void onKeyEvent(KeyEvent e, AbstractMap<Key, KeyState> keyStates) {
         double mapShiftStep = 1;
         switch (e.getKey()) {
-            case LEFT -> mapFocus.addX(-mapShiftStep);
-            case RIGHT -> mapFocus.addX(mapShiftStep);
-            case UP -> mapFocus.addY(-mapShiftStep);
-            case DOWN -> mapFocus.addY(mapShiftStep);
+            case LEFT -> windowFocus.addX(-mapShiftStep);
+            case RIGHT -> windowFocus.addX(mapShiftStep);
+            case UP -> windowFocus.addY(-mapShiftStep);
+            case DOWN -> windowFocus.addY(mapShiftStep);
             case ESC -> entityFocus = null;
         }
     }

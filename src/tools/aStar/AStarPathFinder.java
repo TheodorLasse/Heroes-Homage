@@ -42,8 +42,8 @@ public class AStarPathFinder implements PathFinder {
     }
 
     @Override
-    public void setMap(Dimension mapSize, int[][] terrain) {
-        map = new PathMap(mapSize, terrain);
+    public void setMap(PathMap newMap) {
+        map = newMap;
     }
 
     public Path findPath(Mover mover, int sx, int sy, int tx, int ty) {
