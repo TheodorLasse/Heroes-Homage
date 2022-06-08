@@ -1,6 +1,9 @@
-package src.sprites.Entities;
+package src.sprites.Entities.LivingEntities;
 
 import src.Game;
+import src.sprites.Entities.Entity;
+import src.sprites.Entities.EntityHandler;
+import src.sprites.Entities.EntityType;
 import src.tools.WindowFocus;
 import src.player.PlayerTeam;
 import src.tools.aStar.PathFinder;
@@ -15,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class LivingEntity extends Entity {
+    protected Animation animation;
     protected PlayerTeam team;
     protected EntityHandler entityHandler;
     protected BufferedImage flag;
@@ -30,9 +34,11 @@ public abstract class LivingEntity extends Entity {
      * @param entityHandler EntityHandler which keeps track of Entities on the GameMap
      */
     public LivingEntity(Vector2D position, ImageLoader.Character character, PlayerTeam team, EntityHandler entityHandler) {
-        super(position, new Vector2D(1, 1), 0, Game.imageLoader.getCharacter(character).get(0));
+        super(position, new Vector2D(1, 1), 0, null);
         this.entityHandler = entityHandler;
         this.team = team;
+        this.animation = new Animation(character);
+        this.texture = animation.getAnimationFrame();
         setEntityType(EntityType.LIVING);
 
         switch (team.getTeamColor()){
@@ -46,10 +52,13 @@ public abstract class LivingEntity extends Entity {
     public void update(DeltaTime deltaTime, WindowFocus focus) {
         super.update(deltaTime, focus);
         move(deltaTime);
+        animation.update(deltaTime);
+        this.texture = animation.getAnimationFrame();
     }
 
     protected void move(DeltaTime deltaTime){
         if (path == null || path.getLength() == 0) return;
+        //animation.setAnimation(LivingEntityState.RUN);
 
         timeUntilMove -= deltaTime.getSeconds();
         if (timeUntilMove <= 0){
@@ -58,10 +67,7 @@ public abstract class LivingEntity extends Entity {
             this.position.setY(nextStep.getY());
             timeUntilMove = timeBetweenMoves;
         }
-    }
-
-    protected boolean isMoving(){
-        return path.getLength() != 0;
+        //if (path.getLength() == 0) animation.setAnimation(LivingEntityState.IDLE);
     }
 
     protected void updateTexture(){}

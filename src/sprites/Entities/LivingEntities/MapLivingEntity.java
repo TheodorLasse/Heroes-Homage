@@ -1,14 +1,14 @@
-package src.sprites.Entities;
+package src.sprites.Entities.LivingEntities;
 
 import src.Army;
 import src.Game;
 import src.player.PlayerTeam;
+import src.sprites.Entities.Entity;
+import src.sprites.Entities.EntityHandler;
 import src.tools.Vector2D;
 import src.tools.image.ImageLoader;
 
-import java.awt.image.BufferedImage;
-
-public class MapLivingEntity extends LivingEntity{
+public class MapLivingEntity extends LivingEntity {
     protected final Game game;
     protected Army army;
     /**

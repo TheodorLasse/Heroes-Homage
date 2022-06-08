@@ -3,6 +3,8 @@ package src.combat;
 import src.Army;
 import src.Game;
 import src.sprites.Entities.*;
+import src.sprites.Entities.LivingEntities.CombatLivingEntity;
+import src.sprites.Entities.LivingEntities.LivingEntity;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;

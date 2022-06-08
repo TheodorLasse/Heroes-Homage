@@ -4,6 +4,8 @@ import src.Game;
 import src.player.PlayerTeam;
 import src.player.PlayerTeamColor;
 import src.sprites.Entities.*;
+import src.sprites.Entities.LivingEntities.LivingEntity;
+import src.sprites.Entities.LivingEntities.MapLivingEntity;
 import src.sprites.Entities.MapEntity;
 import src.sprites.SpriteTexture;
 import src.tools.*;

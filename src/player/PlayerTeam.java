@@ -1,6 +1,6 @@
 package src.player;
 
-import src.sprites.Entities.LivingEntity;
+import src.sprites.Entities.LivingEntities.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
