@@ -66,8 +66,8 @@ public class GameMap implements GameKeyListener {
         }
 
         mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), playerTeamList.get(0)));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), game, playerTeamList.get(0), mapEntityHandler));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), game, playerTeamList.get(1), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), ImageLoader.Character.NINJA_1, game, playerTeamList.get(0), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), ImageLoader.Character.NINJA_1, game, playerTeamList.get(1), mapEntityHandler));
     }
 
     /**

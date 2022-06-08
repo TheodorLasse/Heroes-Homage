@@ -23,9 +23,9 @@ public class Army {
                 new Vector2D(0, 1), new Vector2D(0, 2), new Vector2D(0, 3),
                 new Vector2D(0, 4), new Vector2D(0, 5), new Vector2D(0, 6));
 
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), new Vector2D(1, 2), Game.imageLoader.getImage(ImageLoader.ImageName.NINJA_1), team));
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), new Vector2D(2, 2), Game.imageLoader.getImage(ImageLoader.ImageName.NINJA_2), team));
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), new Vector2D(1, 2), Game.imageLoader.getImage(ImageLoader.ImageName.NINJA_3), team));
+        //combatEntities.add(new CombatLivingEntity(startingPositions.get(0), new Vector2D(1, 2), Game.imageLoader.getImage(ImageLoader.ImageName.NINJA_1), team));
+        //combatEntities.add(new CombatLivingEntity(startingPositions.get(0), new Vector2D(2, 2), Game.imageLoader.getImage(ImageLoader.ImageName.NINJA_2), team));
+        //combatEntities.add(new CombatLivingEntity(startingPositions.get(0), new Vector2D(1, 2), Game.imageLoader.getImage(ImageLoader.ImageName.NINJA_3), team));
     }
 
     public void setCombatEntityHandler(EntityHandler combatEntityHandler) {

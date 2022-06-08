@@ -3,16 +3,17 @@ package src.sprites.Entities;
 import src.player.PlayerTeam;
 import src.tools.Vector2D;
 import src.tools.WindowFocus;
+import src.tools.image.ImageLoader;
 import src.tools.time.DeltaTime;
 
 import java.awt.image.BufferedImage;
 
 public class CombatLivingEntity extends LivingEntity {
-    public CombatLivingEntity(Vector2D position, BufferedImage texture, PlayerTeam team) {
-        super(position, texture, team, null);
+    public CombatLivingEntity(Vector2D position, ImageLoader.Character character, PlayerTeam team) {
+        super(position, character, team, null);
     }
-    public CombatLivingEntity(Vector2D position, Vector2D size, BufferedImage texture, PlayerTeam team) {
-        super(position, texture, team, null);
+    public CombatLivingEntity(Vector2D position, Vector2D size, ImageLoader.Character character, PlayerTeam team) {
+        super(position, character, team, null);
         setSize(size);
     }
 

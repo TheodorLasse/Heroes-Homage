@@ -25,12 +25,12 @@ public abstract class LivingEntity extends Entity {
     /**
      * A unit on the GameMap that can move, belongs to a team and has an army
      * @param position Entity's position
-     * @param texture Entity's texture, i.e BufferedImage
+     * @param character Entity's character, i.e list of animations
      * @param team Entity's team
      * @param entityHandler EntityHandler which keeps track of Entities on the GameMap
      */
-    public LivingEntity(Vector2D position, BufferedImage texture, PlayerTeam team, EntityHandler entityHandler) {
-        super(position, new Vector2D(1, 1), 0,texture);
+    public LivingEntity(Vector2D position, ImageLoader.Character character, PlayerTeam team, EntityHandler entityHandler) {
+        super(position, new Vector2D(1, 1), 0, Game.imageLoader.getCharacter(character).get(0));
         this.entityHandler = entityHandler;
         this.team = team;
         setEntityType(EntityType.LIVING);
@@ -59,6 +59,12 @@ public abstract class LivingEntity extends Entity {
             timeUntilMove = timeBetweenMoves;
         }
     }
+
+    protected boolean isMoving(){
+        return path.getLength() != 0;
+    }
+
+    protected void updateTexture(){}
 
     protected void interact(Vector2D position){
         for (Entity entity : entityHandler.getIterator()){

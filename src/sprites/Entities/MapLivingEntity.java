@@ -4,6 +4,7 @@ import src.Army;
 import src.Game;
 import src.player.PlayerTeam;
 import src.tools.Vector2D;
+import src.tools.image.ImageLoader;
 
 import java.awt.image.BufferedImage;
 
@@ -14,13 +15,13 @@ public class MapLivingEntity extends LivingEntity{
      * A unit on the GameMap that can move, belongs to a team and has an army
      *
      * @param position         Entity's position
-     * @param texture          Entity's texture, i.e BufferedImage
+     * @param character        Entity's character, i.e list of BufferedImages
      * @param game             The game object which this Entity calls on for starting combat
      * @param team             Entity's team
      * @param mapEntityHandler EntityHandler which keeps track of Entities on the GameMap
      */
-    public MapLivingEntity(Vector2D position, BufferedImage texture, Game game, PlayerTeam team, EntityHandler mapEntityHandler) {
-        super(position, texture, team, mapEntityHandler);
+    public MapLivingEntity(Vector2D position, ImageLoader.Character character, Game game, PlayerTeam team, EntityHandler mapEntityHandler) {
+        super(position, character, team, mapEntityHandler);
         this.game = game;
         this.army = new Army(team);
     }

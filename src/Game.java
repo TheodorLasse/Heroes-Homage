@@ -48,7 +48,7 @@ public class Game {
         // Try to load all images and audio.
         // If the loading fails, then exit the program because there is no point in running the game without these resources.
         try {
-            imageLoader.loadImages();
+            imageLoader.loadAssets();
         } catch (IOException e) {
             logger.log(Level.SEVERE, e.toString(), e);
             System.exit(1);
