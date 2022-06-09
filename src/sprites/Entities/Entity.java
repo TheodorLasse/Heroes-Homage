@@ -1,6 +1,5 @@
 package src.sprites.Entities;
 
-import src.map.GameMap;
 import src.tools.WindowFocus;
 import src.tools.Rotation;
 import src.tools.Vector2D;
@@ -16,6 +15,8 @@ import java.awt.image.BufferedImage;
 
 public abstract class Entity implements Sprite, Mover {
     protected Vector2D position;
+    protected Vector2D drawPosition;
+
     protected Vector2D relativePosition;
     protected Vector2D size;
     protected Rotation rotation;
@@ -24,28 +25,35 @@ public abstract class Entity implements Sprite, Mover {
 
     protected Entity(final Vector2D position, final Vector2D size, final double rotation, final BufferedImage texture){
         this.position = position;
-        this.relativePosition = position;
+        this.drawPosition = position;
         this.size = size;
         this.rotation = new Rotation(rotation);
         this.texture = texture;
         setEntityType(EntityType.NONE);
     }
 
-    public void update(DeltaTime deltaTime) {}
-
     /**
-     * Updates the entity. If there is a WindowFocus object, use it to get relative position.
+     * Updates the entity
      */
     public void update(DeltaTime deltaTime, WindowFocus focus) {
-        Vector2D relativeMapPosition = Vector2D.getDifference(position, focus.getPosition());
-        int tileSize = focus.getTileSize();
-        relativePosition = new Vector2D(
-                relativeMapPosition.getX() * tileSize, relativeMapPosition.getY() * tileSize);
+        updateRelativePos(focus);
     }
 
     @Override public void draw(final Graphics g, final JComponent gc) {
-        g.drawImage(getTexture(), (int) relativePosition.getX(),
-                (int) relativePosition.getY(), gc);
+        g.drawImage(getTexture(), (int) drawPosition.getX(),
+                (int) drawPosition.getY(), gc);
+    }
+
+    protected Vector2D getRelativeMapPosition(Vector2D pos, Vector2D focusPos){
+        return Vector2D.getDifference(position, focusPos);
+    }
+
+    protected void updateRelativePos(WindowFocus focus){
+        Vector2D relativeMapPosition = getRelativeMapPosition(position, focus.getPosition());
+        int tileSize = focus.getTileSize();
+        drawPosition = new Vector2D(
+                relativeMapPosition.getX() * tileSize, relativeMapPosition.getY() * tileSize);
+        relativePosition = drawPosition.copy();
     }
 
     public boolean isOverlap(Vector2D mapPos){

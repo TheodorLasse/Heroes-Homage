@@ -1,7 +1,6 @@
 package src.sprites.Entities.LivingEntities;
 
 import src.Game;
-import src.sprites.Entities.LivingEntities.LivingEntityState;
 import src.tools.image.ImageLoader;
 import src.tools.time.DeltaTime;
 import src.tools.time.DeltaTimer;
@@ -12,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Animation {
+    private LivingEntityState entityState;
     private final Map<LivingEntityState, List<BufferedImage>> stateAnimations;
-    private List<BufferedImage> currentAnimation;
     private int currentFrame;
     private final DeltaTimer timer;
 
@@ -28,33 +27,34 @@ public class Animation {
             Map.entry(LivingEntityState.DEAD, 1)
     );
 
-    public Animation(ImageLoader.Character character){
+    public Animation(ImageLoader.Character character, LivingEntityState entityState){
+        this.entityState = entityState;
         stateAnimations = new EnumMap<>(LivingEntityState.class);
         List<BufferedImage> allFrames = Game.imageLoader.getCharacter(character);
 
         int i = 0;
         for (LivingEntityState state: LivingEntityState.values()){
             stateAnimations.put(state, allFrames.subList(i, i + animationStateLength.get(state)));
-            i++;
+            i += animationStateLength.get(state);
         }
-
-        currentAnimation = stateAnimations.get(LivingEntityState.IDLE);
         timer = new DeltaTimer();
     }
 
     public void update(DeltaTime deltaTime){
         timer.update(deltaTime);
-        double timeBetweenFrames = 0.4;
-        if (timer.getElapsedSeconds() > timeBetweenFrames * currentAnimation.size()) timer.restart();
+        final double timeBetweenFrames = 0.3;
+        List<BufferedImage> currentList = stateAnimations.get(entityState);
+        if (timer.getElapsedSeconds() > timeBetweenFrames * currentList.size()) timer.restart();
         currentFrame = (int)(timer.getElapsedSeconds()/ timeBetweenFrames);
     }
 
     public BufferedImage getAnimationFrame(){
-        return currentAnimation.get(currentFrame);
+        return stateAnimations.get(entityState).get(currentFrame);
     }
 
     public void setAnimation(LivingEntityState state){
+        if (state == entityState) return;
         timer.restart();
-        currentAnimation = stateAnimations.get(state);
+        entityState = state;
     }
 }

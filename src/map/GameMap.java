@@ -202,7 +202,11 @@ public class GameMap implements GameKeyListener {
             case RIGHT -> windowFocus.addX(mapShiftStep);
             case UP -> windowFocus.addY(-mapShiftStep);
             case DOWN -> windowFocus.addY(mapShiftStep);
-            case ESC -> entityFocus = null;
+            case ESC -> {
+                if (entityFocus != null) entityFocus = null;
+                System.exit(-1);
+                //TODO keys presses register twice
+            }
         }
     }
 }

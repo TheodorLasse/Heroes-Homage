@@ -80,6 +80,7 @@ public class Game {
             long deltaTime = startTime - lastUpdate;
             lastUpdate = startTime;
 
+
             update(new DeltaTime(deltaTime));
             panelContainer.repaint();
 

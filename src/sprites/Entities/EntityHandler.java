@@ -41,20 +41,6 @@ public class EntityHandler
      *
      * @param deltaTime
      */
-    public void update(DeltaTime deltaTime) {
-        // Update all entities
-        for (Entity entity : entities) {
-            entity.update(deltaTime);
-        }
-
-        internalUpdate();
-    }
-
-    /**
-     * Updates the entity handler and all entities.
-     *
-     * @param deltaTime
-     */
     public void update(DeltaTime deltaTime, WindowFocus focus) {
         // Update all entities
         for (Entity entity : entities) {

@@ -1,5 +1,7 @@
 package src.tools.image;
 
+import src.tools.Vector2D;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
@@ -85,6 +87,7 @@ public class ImageLoader
 
     private final Map<ImageName, BufferedImage> images;
     private final Map<NinjaSheetName, BufferedImage> ninjaImages;
+
     private final Map<Character, List<BufferedImage>> animations;
 
     /**

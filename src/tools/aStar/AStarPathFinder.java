@@ -47,7 +47,8 @@ public class AStarPathFinder implements PathFinder {
     }
 
     public Path findPath(Mover mover, int sx, int sy, int tx, int ty) {
-        if (this.map.blocked(mover, tx, ty)) {
+        boolean isOutOfRange = tx >= map.getWidthInTiles() || tx < 0 || ty >= map.getHeightInTiles() || ty < 0;
+        if (isOutOfRange || this.map.blocked(mover, tx, ty)) {
             return null;
         } else {
             this.nodes[sx][sy].cost = 0.0F;

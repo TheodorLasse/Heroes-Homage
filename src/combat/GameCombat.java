@@ -60,8 +60,8 @@ public class GameCombat {
     public void setUpBattlefield(Army attacker, Army defender){
         this.attacker = attacker;
         this.defender = defender;
-        attacker.setCombatEntityHandler(combatEntityHandler);
-        defender.setCombatEntityHandler(combatEntityHandler);
+        attacker.setCombatEntities(combatEntityHandler);
+        defender.setCombatEntities(combatEntityHandler);
 
         int i = 0;
         for (CombatLivingEntity entity : attacker.getCombatEntities()){

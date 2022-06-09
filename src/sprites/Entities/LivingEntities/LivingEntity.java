@@ -18,7 +18,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class LivingEntity extends Entity {
+    protected ImageLoader.Character character;
     protected Animation animation;
+    protected LivingEntityState entityState;
     protected PlayerTeam team;
     protected EntityHandler entityHandler;
     protected BufferedImage flag;
@@ -37,7 +39,9 @@ public abstract class LivingEntity extends Entity {
         super(position, new Vector2D(1, 1), 0, null);
         this.entityHandler = entityHandler;
         this.team = team;
-        this.animation = new Animation(character);
+        this.character = character;
+        this.entityState = LivingEntityState.IDLE;
+        this.animation = new Animation(character, entityState);
         this.texture = animation.getAnimationFrame();
         setEntityType(EntityType.LIVING);
 
@@ -57,8 +61,15 @@ public abstract class LivingEntity extends Entity {
     }
 
     protected void move(DeltaTime deltaTime){
-        if (path == null || path.getLength() == 0) return;
-        //animation.setAnimation(LivingEntityState.RUN);
+        if (path == null || path.getLength() == 0) {
+            animation.setAnimation(LivingEntityState.IDLE);
+            return;
+        }
+
+        double directionLength = (timeBetweenMoves - timeUntilMove) / deltaTime.getSeconds();
+        Vector2D direction = new Vector2D((path.getX(0) - position.getX()) * directionLength,
+                (path.getY(0) - position.getY()) * directionLength);
+        drawPosition = Vector2D.getSum(direction, drawPosition);
 
         timeUntilMove -= deltaTime.getSeconds();
         if (timeUntilMove <= 0){
@@ -67,10 +78,7 @@ public abstract class LivingEntity extends Entity {
             this.position.setY(nextStep.getY());
             timeUntilMove = timeBetweenMoves;
         }
-        //if (path.getLength() == 0) animation.setAnimation(LivingEntityState.IDLE);
     }
-
-    protected void updateTexture(){}
 
     protected void interact(Vector2D position){
         for (Entity entity : entityHandler.getIterator()){
@@ -86,8 +94,6 @@ public abstract class LivingEntity extends Entity {
     @Override
     public void onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
-        if (mouseRounded.getX() < 0 || mouseRounded.getY() < 0) return;
-
         Vector2D diff = Vector2D.getDifference(position, mouseRounded);
         if (diff.getLength() <= 1.42){
             interact(mouseMapPos);
@@ -95,6 +101,13 @@ public abstract class LivingEntity extends Entity {
         finder.setMap(map);
         path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
                 (int)mouseRounded.getX(), (int)mouseRounded.getY());
+        animation.setAnimation(LivingEntityState.RUN);
+    }
+
+    @Override
+    protected void updateRelativePos(WindowFocus focus) {
+        super.updateRelativePos(focus);
+        drawPosition = Vector2D.getSum(drawPosition, CharacterOffsets.CHARACTER_OFFSETS.get(character));
     }
 
     @Override

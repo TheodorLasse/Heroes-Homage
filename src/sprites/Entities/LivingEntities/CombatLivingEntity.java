@@ -3,28 +3,22 @@ package src.sprites.Entities.LivingEntities;
 import src.player.PlayerTeam;
 import src.sprites.Entities.EntityHandler;
 import src.tools.Vector2D;
-import src.tools.WindowFocus;
 import src.tools.image.ImageLoader;
-import src.tools.time.DeltaTime;
 
 public class CombatLivingEntity extends LivingEntity {
     public CombatLivingEntity(Vector2D position, ImageLoader.Character character, PlayerTeam team) {
         super(position, character, team, null);
+        timeBetweenMoves = 0.5;
     }
     public CombatLivingEntity(Vector2D position, Vector2D size, ImageLoader.Character character, PlayerTeam team) {
         super(position, character, team, null);
         setSize(size);
+        timeBetweenMoves = 0.5;
     }
 
-    /**
-     * Updates the entity. If there is a WindowFocus object, use it to get relative position.
-     */
-    public void update(DeltaTime deltaTime, WindowFocus focus) {
-        super.update(deltaTime, focus);
-        Vector2D relativeMapPosition = Vector2D.getSum(focus.getPosition(), position);
-        int tileSize = focus.getTileSize();
-        relativePosition = new Vector2D(
-                relativeMapPosition.getX() * tileSize, relativeMapPosition.getY() * tileSize);
+    @Override
+    protected Vector2D getRelativeMapPosition(Vector2D pos, Vector2D focusPos){
+        return Vector2D.getSum(focusPos, position);
     }
 
     public void setCombatEntityHandler(EntityHandler combatEntityHandler){
