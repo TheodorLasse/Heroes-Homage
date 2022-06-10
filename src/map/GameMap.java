@@ -3,10 +3,11 @@ package src.map;
 import src.Game;
 import src.player.PlayerTeam;
 import src.player.PlayerTeamColor;
-import src.sprites.Entities.*;
-import src.sprites.Entities.LivingEntities.LivingEntity;
-import src.sprites.Entities.LivingEntities.MapLivingEntity;
-import src.sprites.Entities.MapEntity;
+import src.sprites.entities.*;
+import src.sprites.entities.livingEntities.Character;
+import src.sprites.entities.livingEntities.LivingEntity;
+import src.sprites.entities.livingEntities.MapLivingEntity;
+import src.sprites.entities.MapEntity;
 import src.sprites.SpriteTexture;
 import src.tools.*;
 import src.tools.aStar.AStarPathFinder;
@@ -68,8 +69,8 @@ public class GameMap implements GameKeyListener {
         }
 
         mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), playerTeamList.get(0)));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), ImageLoader.Character.NINJA_1, game, playerTeamList.get(0), mapEntityHandler));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), ImageLoader.Character.NINJA_1, game, playerTeamList.get(1), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Character.CharacterEnum.NINJA_1, game, playerTeamList.get(0), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), Character.CharacterEnum.NINJA_1, game, playerTeamList.get(1), mapEntityHandler));
     }
 
     /**

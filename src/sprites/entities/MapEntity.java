@@ -1,13 +1,8 @@
-package src.sprites.Entities;
+package src.sprites.entities;
 
-import src.map.GameMap;
 import src.player.PlayerTeam;
-import src.sprites.Entities.Entity;
-import src.sprites.Entities.EntityType;
 import src.tools.Vector2D;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class MapEntity extends Entity {

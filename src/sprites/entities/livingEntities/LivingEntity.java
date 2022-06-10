@@ -1,9 +1,9 @@
-package src.sprites.Entities.LivingEntities;
+package src.sprites.entities.livingEntities;
 
 import src.Game;
-import src.sprites.Entities.Entity;
-import src.sprites.Entities.EntityHandler;
-import src.sprites.Entities.EntityType;
+import src.sprites.entities.Entity;
+import src.sprites.entities.EntityHandler;
+import src.sprites.entities.EntityType;
 import src.tools.WindowFocus;
 import src.player.PlayerTeam;
 import src.tools.aStar.PathFinder;
@@ -18,9 +18,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class LivingEntity extends Entity {
-    protected ImageLoader.Character character;
+    protected Character.CharacterEnum character;
     protected Animation animation;
     protected LivingEntityState entityState;
+    protected boolean alive = true;
     protected PlayerTeam team;
     protected EntityHandler entityHandler;
     protected BufferedImage flag;
@@ -37,7 +38,7 @@ public abstract class LivingEntity extends Entity {
      * @param team Entity's team
      * @param entityHandler EntityHandler which keeps track of Entities on the GameMap
      */
-    public LivingEntity(Vector2D position, ImageLoader.Character character, PlayerTeam team, EntityHandler entityHandler) {
+    public LivingEntity(Vector2D position, Character.CharacterEnum character, PlayerTeam team, EntityHandler entityHandler) {
         super(position, new Vector2D(1, 1), 0, null);
         this.entityHandler = entityHandler;
         this.team = team;
@@ -57,7 +58,7 @@ public abstract class LivingEntity extends Entity {
     @Override
     public void update(DeltaTime deltaTime, WindowFocus focus) {
         super.update(deltaTime, focus);
-        move(deltaTime);
+        if (alive) move(deltaTime);
         animation.update(deltaTime);
         this.texture = animation.getAnimationFrame();
         this.tileSize = focus.getTileSize();
@@ -96,6 +97,7 @@ public abstract class LivingEntity extends Entity {
 
     @Override
     public void onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
+        if (!alive) return;
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
         Vector2D diff = Vector2D.getDifference(position, mouseRounded);
         if (diff.getLength() <= 1.42){
@@ -110,18 +112,25 @@ public abstract class LivingEntity extends Entity {
     @Override
     protected void updateRelativePos(WindowFocus focus) {
         super.updateRelativePos(focus);
-        drawPosition = Vector2D.getSum(drawPosition, CharacterOffsets.CHARACTER_OFFSETS.get(character));
+        drawPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSETS.get(character));
+    }
+
+    protected void drawBanner(Graphics g, JComponent gc){
+        if(flag != null){
+            g.drawImage(flag, (int) relativePosition.getX(), (int) relativePosition.getY(), gc);
+        }
+    }
+
+    protected void drawSizeRect(Graphics g, JComponent gc){
+        g.setColor(Color.CYAN);
+        g.drawRect((int)(relativePosition.getX()), (int)(relativePosition.getY()),
+                (int)(size.getX() * tileSize), (int)(size.getY() * tileSize));
     }
 
     @Override
     public void draw(Graphics g, JComponent gc) {
-        if(flag != null){
-            g.drawImage(flag, (int) relativePosition.getX(), (int) relativePosition.getY(), gc);
-        }
-        g.setColor(Color.CYAN);
-        g.drawRect((int)(relativePosition.getX()), (int)(relativePosition.getY()),
-                (int)(size.getX() * tileSize), (int)(size.getY() * tileSize));
         super.draw(g, gc);
+        drawBanner(g, gc);
     }
 
     public PlayerTeam getPlayerTeam(){

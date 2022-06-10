@@ -2,6 +2,7 @@ package src.tools;
 
 
 import com.google.gson.Gson;
+import src.sprites.entities.livingEntities.Character;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -17,24 +18,19 @@ import java.util.logging.Logger;
  */
 public class JsonReader
 {
-    public enum VALUES
-    {
-        NINJA_1, NINJA_2, NINJA_3, NINJA_4, NINJA_5, NINJA_6
-    }
-
     private static final Logger LOGGER = Logger.getLogger("");
 
-    private static final Map<VALUES, String> VALUES_MAP = Map.ofEntries(
-            Map.entry(VALUES.NINJA_1, "ninja_1"),
-            Map.entry(VALUES.NINJA_2, "ninja_2"),
-            Map.entry(VALUES.NINJA_3, "ninja_3"),
-            Map.entry(VALUES.NINJA_4, "ninja_4"),
-            Map.entry(VALUES.NINJA_5, "ninja_5"),
-            Map.entry(VALUES.NINJA_6, "ninja_6")
+    private static final Map<Character.CharacterEnum, String> CHARACTER_MAP = Map.ofEntries(
+            Map.entry(Character.CharacterEnum.NINJA_1, "ninja_1"),
+            Map.entry(Character.CharacterEnum.NINJA_2, "ninja_2"),
+            Map.entry(Character.CharacterEnum.NINJA_3, "ninja_3"),
+            Map.entry(Character.CharacterEnum.NINJA_4, "ninja_4"),
+            Map.entry(Character.CharacterEnum.NINJA_5, "ninja_5"),
+            Map.entry(Character.CharacterEnum.NINJA_6, "ninja_6")
             );
 
-    public static Map<?, ?> readJson(VALUES value) throws IOException, FileNotFoundException {
-        String fileName = VALUES_MAP.get(value);
+    public static Map<?, ?> readJson(Character.CharacterEnum character) throws IOException {
+        String fileName = CHARACTER_MAP.get(character);
 
         Gson gson = new Gson();
 
@@ -58,13 +54,13 @@ public class JsonReader
      * Tries to load json data. If it fails, the program will be terminated.
      * This should only be used where the json data is critical for the program, and it won't work without it.
      *
-     * @param value Value to load
+     * @param character Value to load
      *
      * @return Map with json data.
      */
-    public static Map<?, ?> readJsonCritical(VALUES value) {
+    public static Map<?, ?> readJsonCritical(Character.CharacterEnum character) {
         try {
-            return readJson(value);
+            return readJson(character);
         } catch (IOException e) {
             // This catch clause triggers two warnings in the automatic code inspection.
             // "CatchReturnNull" can be ignored because it does not actually return null, since the program is terminated before that.

@@ -1,6 +1,6 @@
 package src.tools.image;
 
-import src.tools.Vector2D;
+import src.sprites.entities.livingEntities.Character;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -25,11 +25,6 @@ public class ImageLoader
         NINJA_SHEET_14, NINJA_SHEET_15, NINJA_SHEET_16, NINJA_SHEET_17, NINJA_SHEET_18, NINJA_SHEET_19, NINJA_SHEET_20,
         NINJA_SHEET_21, NINJA_SHEET_22, NINJA_SHEET_23, NINJA_SHEET_24, NINJA_SHEET_25, NINJA_SHEET_26, NINJA_SHEET_27,
         NINJA_SHEET_28, NINJA_SHEET_29, NINJA_SHEET_30, NINJA_SHEET_31, NINJA_SHEET_32
-    }
-
-    public enum Character
-    {
-        NINJA_1, NINJA_2, NINJA_3, NINJA_4, NINJA_5, NINJA_6
     }
 
     /**
@@ -88,7 +83,7 @@ public class ImageLoader
     private final Map<ImageName, BufferedImage> images;
     private final Map<NinjaSheetName, BufferedImage> ninjaImages;
 
-    private final Map<Character, List<BufferedImage>> animations;
+    private final Map<Character.CharacterEnum, List<BufferedImage>> animations;
 
     /**
      * Cuts a sheet into sub images and puts them each into a List<BufferedImage>
@@ -102,14 +97,14 @@ public class ImageLoader
      * @param characters List of character to add images to animation lists
      */
     private void loadSheet(BufferedImage sheet, int startRow, int endRow,
-                                                 int tilesPerRow, List<Character> characters){
+                                                 int tilesPerRow, List<Character.CharacterEnum> characters){
         int tileWidth = sheet.getWidth() / tilesPerRow;
         int tileHeight = sheet.getHeight() / endRow;
 
         for (int k = 0; k < endRow; k++) {
             for (int i = 0; i < tilesPerRow; i++) {
                 int index = k * tilesPerRow + i;
-                Character iterCharacter = characters.get(index);
+                Character.CharacterEnum iterCharacter = characters.get(index);
                 animations.get(iterCharacter).add(sheet.getSubimage(
                         i * tileWidth, (startRow + k) * tileHeight, tileWidth, tileHeight));
             }
@@ -119,7 +114,7 @@ public class ImageLoader
     public ImageLoader() {
         images = new EnumMap<>(ImageName.class);
         ninjaImages = new EnumMap<>(NinjaSheetName.class);
-        animations = new EnumMap<>(Character.class);
+        animations = new EnumMap<>(Character.CharacterEnum.class);
     }
 
     /**
@@ -140,7 +135,7 @@ public class ImageLoader
      *
      * @return An Image
      */
-    public List<BufferedImage> getCharacter(Character character) {return animations.get(character); }
+    public List<BufferedImage> getCharacter(Character.CharacterEnum character) {return animations.get(character); }
 
     /**
      * Loads all images and creates sheets.
@@ -163,9 +158,9 @@ public class ImageLoader
         int endRow = 2;
         int tilesPerRow = 3;
 
-        List<Character> ninjas = Arrays.asList(Character.NINJA_1, Character.NINJA_2, Character.NINJA_3,
-                Character.NINJA_4, Character.NINJA_5, Character.NINJA_6);
-        for (Character ninja : ninjas){
+        List<Character.CharacterEnum> ninjas = Arrays.asList(Character.CharacterEnum.NINJA_1, Character.CharacterEnum.NINJA_2, Character.CharacterEnum.NINJA_3,
+                Character.CharacterEnum.NINJA_4, Character.CharacterEnum.NINJA_5, Character.CharacterEnum.NINJA_6);
+        for (Character.CharacterEnum ninja : ninjas){
             animations.put(ninja, new ArrayList<>());
         }
 

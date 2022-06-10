@@ -1,10 +1,10 @@
 package src;
 
 import src.player.PlayerTeam;
-import src.sprites.Entities.LivingEntities.CombatLivingEntity;
-import src.sprites.Entities.EntityHandler;
+import src.sprites.entities.livingEntities.Character;
+import src.sprites.entities.livingEntities.CombatLivingEntity;
+import src.sprites.entities.EntityHandler;
 import src.tools.Vector2D;
-import src.tools.image.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,9 +22,9 @@ public class Army {
                 new Vector2D(0, 1), new Vector2D(0, 2), new Vector2D(0, 3),
                 new Vector2D(0, 4), new Vector2D(0, 5), new Vector2D(0, 6));
 
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), ImageLoader.Character.NINJA_4, team));
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), ImageLoader.Character.NINJA_5, team));
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), ImageLoader.Character.NINJA_6, team));
+        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), Character.CharacterEnum.NINJA_4, team));
+        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), Character.CharacterEnum.NINJA_5, team));
+        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), Character.CharacterEnum.NINJA_6, team));
     }
 
     public void setCombatEntities(EntityHandler combatEntityHandler) {

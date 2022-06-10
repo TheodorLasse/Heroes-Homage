@@ -1,12 +1,11 @@
-package src.sprites.Entities.LivingEntities;
+package src.sprites.entities.livingEntities;
 
 import src.Army;
 import src.Game;
 import src.player.PlayerTeam;
-import src.sprites.Entities.Entity;
-import src.sprites.Entities.EntityHandler;
+import src.sprites.entities.Entity;
+import src.sprites.entities.EntityHandler;
 import src.tools.Vector2D;
-import src.tools.image.ImageLoader;
 
 public class MapLivingEntity extends LivingEntity {
     protected final Game game;
@@ -20,7 +19,7 @@ public class MapLivingEntity extends LivingEntity {
      * @param team             Entity's team
      * @param mapEntityHandler EntityHandler which keeps track of Entities on the GameMap
      */
-    public MapLivingEntity(Vector2D position, ImageLoader.Character character, Game game, PlayerTeam team, EntityHandler mapEntityHandler) {
+    public MapLivingEntity(Vector2D position, Character.CharacterEnum character, Game game, PlayerTeam team, EntityHandler mapEntityHandler) {
         super(position, character, team, mapEntityHandler);
         this.game = game;
         this.army = new Army(team);

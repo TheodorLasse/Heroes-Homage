@@ -1,4 +1,4 @@
-package src.sprites.Entities;
+package src.sprites.entities;
 
 import src.tools.WindowFocus;
 import src.tools.Rotation;
