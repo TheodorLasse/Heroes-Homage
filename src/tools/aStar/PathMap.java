@@ -1,5 +1,7 @@
 package src.tools.aStar;
 
+import src.tools.Vector2D;
+
 import java.awt.*;
 
 /**
@@ -33,7 +35,13 @@ public class PathMap implements TileBasedMap{
 
     @Override
     public boolean blocked(Mover var1, int x, int y) {
-        return this.terrain[x][y] == 1;
+        Vector2D size = var1.getSize();
+        for (int sizeX = 0; sizeX < size.getX(); sizeX++) {
+            for (int sizeY = 0; sizeY < size.getY(); sizeY++) {
+                if (this.terrain[x + sizeX][y + sizeY] == 1) return true;
+            }
+        }
+        return false;
     }
 
     @Override

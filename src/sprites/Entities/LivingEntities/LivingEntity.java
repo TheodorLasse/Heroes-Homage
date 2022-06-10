@@ -28,6 +28,8 @@ public abstract class LivingEntity extends Entity {
     protected double timeUntilMove = 0;
     protected double timeBetweenMoves = 0.2;
 
+    protected int tileSize = 0;
+
     /**
      * A unit on the GameMap that can move, belongs to a team and has an army
      * @param position Entity's position
@@ -58,6 +60,7 @@ public abstract class LivingEntity extends Entity {
         move(deltaTime);
         animation.update(deltaTime);
         this.texture = animation.getAnimationFrame();
+        this.tileSize = focus.getTileSize();
     }
 
     protected void move(DeltaTime deltaTime){
@@ -115,6 +118,9 @@ public abstract class LivingEntity extends Entity {
         if(flag != null){
             g.drawImage(flag, (int) relativePosition.getX(), (int) relativePosition.getY(), gc);
         }
+        g.setColor(Color.CYAN);
+        g.drawRect((int)(relativePosition.getX()), (int)(relativePosition.getY()),
+                (int)(size.getX() * tileSize), (int)(size.getY() * tileSize));
         super.draw(g, gc);
     }
 
