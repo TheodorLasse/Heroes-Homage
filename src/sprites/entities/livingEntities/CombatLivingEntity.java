@@ -13,6 +13,7 @@ import java.awt.*;
 
 public class CombatLivingEntity extends LivingEntity {
     protected CombatStats stats;
+    protected boolean isEntityTurn = false;
 
     public CombatLivingEntity(Character.CharacterEnum character, PlayerTeam team) {
         super(new Vector2D(), character, team, null);
@@ -44,7 +45,7 @@ public class CombatLivingEntity extends LivingEntity {
     }
 
     private void attack(CombatLivingEntity entity) {
-        if (!entity.isAlive()) return;
+        if (entity.isDead()) return;
         int damage = stats.rollDamage();
         entity.underAttack(damage);
 
@@ -61,6 +62,10 @@ public class CombatLivingEntity extends LivingEntity {
         return Vector2D.getSum(focusPos, position);
     }
 
+    public int getInitiative(){
+        return stats.getInitiative();
+    }
+
     public void setCombatEntityHandler(EntityHandler combatEntityHandler){
         this.entityHandler = combatEntityHandler;
     }
@@ -69,8 +74,12 @@ public class CombatLivingEntity extends LivingEntity {
         this.size = size;
     }
 
-    public boolean isAlive() {
-        return alive;
+    public void setEntityTurn(boolean isEntityTurn){
+        this.isEntityTurn = isEntityTurn;
+    }
+
+    public boolean isDead() {
+        return !alive;
     }
 
     @Override
@@ -98,5 +107,11 @@ public class CombatLivingEntity extends LivingEntity {
         //Draw stack size
         g2.setColor(Color.BLACK);
         g2.drawString(Integer.toString(stats.getStackSize()), drawX + bannerWidth/3, drawY + g.getFont().getSize());
+    }
+
+    @Override
+    public void draw(Graphics g, JComponent gc) {
+        super.draw(g, gc);
+        if (isEntityTurn) drawSizeRect(g);
     }
 }

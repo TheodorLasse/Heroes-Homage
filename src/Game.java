@@ -147,7 +147,7 @@ public class Game {
     }
 
     public PlayerTeam getCurrentPlayer(){
-        return playerTeamList.get(0);
+        return gameMap.getCurrentPlayer();
     }
 
     /**

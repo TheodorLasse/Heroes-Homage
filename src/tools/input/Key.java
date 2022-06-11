@@ -5,5 +5,5 @@ package src.tools.input;
  */
 public enum Key
 {
-    UP, LEFT, DOWN, RIGHT, ESC
+    UP, LEFT, DOWN, RIGHT, ESC, E
 }

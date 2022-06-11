@@ -32,6 +32,7 @@ public class KeyHandler
 	addInputAction(java.awt.event.KeyEvent.VK_S, Key.DOWN);
 	addInputAction(java.awt.event.KeyEvent.VK_D, Key.RIGHT);
 	addInputAction(java.awt.event.KeyEvent.VK_ESCAPE, Key.ESC);
+	addInputAction(java.awt.event.KeyEvent.VK_E, Key.E);
     }
 
     /**

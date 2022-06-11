@@ -34,16 +34,20 @@ public class MenuComponent extends JComponent
         c.weightx = 0.5;
         c.gridwidth = 4;
         c.gridx = 0;
-        c.gridy = 0;
+        c.gridy = 1;
 
         JLabel minimap = new Minimap(game);
         this.add(minimap, c);
 
         c.ipady = 200;
-        c.gridy = 1;
+        c.gridy = 2;
 
         JLabel resources = new MenuResources(game);
         this.add(resources, c);
+
+        c.gridy = 0;
+        JLabel banner = new MenuTurnBanner(game);
+        this.add(banner, c);
     }
 
 

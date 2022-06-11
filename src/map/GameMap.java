@@ -43,6 +43,7 @@ public class GameMap implements GameKeyListener {
     private final Dimension screenSize;
 
     private final WindowFocus windowFocus;
+    private final MapTurn mapTurn;
     private LivingEntity entityFocus;
 
     private final int teamCount = 2;
@@ -61,6 +62,7 @@ public class GameMap implements GameKeyListener {
         windowFocus = new WindowFocus(new Vector2D(), screenSize, mapSize, TILE_SIZE);
         mapTiles = new ArrayList<>();
         initPlayerTeams(playerTeamList);
+        mapTurn = new MapTurn(playerTeamList);
 
         MapSpriteFactory factory = new MapSpriteFactory(screenSize);
         background = factory.createBackground(mapSize, mapTiles);
@@ -100,6 +102,10 @@ public class GameMap implements GameKeyListener {
         return background;
     }
 
+    public PlayerTeam getCurrentPlayer(){
+        return mapTurn.getCurrentPlayer();
+    }
+
     /**
      *
      * @return Iterable of all of the Entity objects located in the GameMap
@@ -117,26 +123,14 @@ public class GameMap implements GameKeyListener {
     }
 
     /**
-     * Chart a path to a mapPos for an entity
-     * @param entity entity from which path is started
-     * @param mapPos position to which path goes
-     * @return Array of Steps to reach mapPos
-     */
-    /*public Path getPath(Entity entity, Vector2D mapPos){
-        Vector2D entityPos = entity.getPosition();
-        finder.setMap(mapSize, getBlocked());
-        return finder.findPath(entity, (int)entityPos.getX(), (int)entityPos.getY(), (int)mapPos.getX(), (int)mapPos.getY());
-    }*/
-
-    /**
      * Calculates and returns all blocked positions of the map, 1 = blocked, 0 = free
      */
     private int[][] getBlocked(){
         int[][] blocked = new int[mapSize.width][mapSize.height];
         for (int x = 0; x < mapTiles.size(); x++){
             for (int y = 0; y < mapTiles.get(x).size(); y++){
-                switch (mapTiles.get(x).get(y)){
-                    case WATER -> blocked[x][y] = 1;
+                if (mapTiles.get(x).get(y) == MapTileType.WATER) {
+                    blocked[x][y] = 1;
                 }
             }
         }
@@ -189,7 +183,7 @@ public class GameMap implements GameKeyListener {
                 }
             }
         }
-        else if (mouseButton == 3 && entityFocus != null){
+        else if (mouseButton == 3 && entityFocus != null && entityFocus.getPlayerTeam() == mapTurn.getCurrentPlayer()){
             PathMap map = new PathMap(mapSize, getBlocked());
             entityFocus.onMouseClick3(map, finder, mouseAbsolutePos);
         }
@@ -198,6 +192,7 @@ public class GameMap implements GameKeyListener {
     @Override
     public void onKeyEvent(KeyEvent e, AbstractMap<Key, KeyState> keyStates) {
         double mapShiftStep = 1;
+        if (keyStates.get(e.getKey()) == KeyState.RELEASED) return; //Only register key event when pressed, not released
         switch (e.getKey()) {
             case LEFT -> windowFocus.addX(-mapShiftStep);
             case RIGHT -> windowFocus.addX(mapShiftStep);
@@ -205,9 +200,9 @@ public class GameMap implements GameKeyListener {
             case DOWN -> windowFocus.addY(mapShiftStep);
             case ESC -> {
                 if (entityFocus != null) entityFocus = null;
-                System.exit(-1);
-                //TODO keys presses register twice
+                else System.exit(-1);
             }
+            case E -> mapTurn.nextPlayersTurn();
         }
     }
 }

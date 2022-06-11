@@ -21,7 +21,7 @@ public class MenuResources extends JLabel {
     public MenuResources(Game game){
         this.game = game;
         resources = new EnumMap<>(Resource.class);
-        //Don't like it, but its better than using swing
+        //Don't like it, but it's better than using swing
         List<Vector2D> imagePositions = Arrays.asList(
                 new Vector2D(85, 50),
                 new Vector2D(27, 87),

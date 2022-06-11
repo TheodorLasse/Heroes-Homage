@@ -11,6 +11,7 @@ public class CombatStats {
     private final int maxHealth;
     private final int minDamage;
     private final int maxDamage;
+    private final int initiative;
     private final Random rnd = new Random();
 
     /**
@@ -24,6 +25,7 @@ public class CombatStats {
         maxHealth = (int) (double) jsonMap.get("maxHealth");
         minDamage = (int) (double) jsonMap.get("minDamage");
         maxDamage = (int) (double) jsonMap.get("maxDamage");
+        initiative = (int) (double) jsonMap.get("initiative");
         totalHealth = maxHealth * stackSize;
     }
 
@@ -51,5 +53,9 @@ public class CombatStats {
 
     public int getStackSize() {
         return stackSize;
+    }
+
+    public int getInitiative(){
+        return initiative;
     }
 }

@@ -27,9 +27,9 @@ public class GameCombat {
     private final SpriteHandler combatSpriteHandler;
     private final EntityHandler combatEntityHandler;
     private final WindowFocus focus;
-    private LivingEntity entityFocus;
     private final PathFinder finder;
     private final List<Vector2D> startingPositions;
+    private CombatTurn combatTurn;
 
     public GameCombat(Game game){
         this.game = game;
@@ -68,11 +68,13 @@ public class GameCombat {
     public void setUpBattlefield(Army attacker, Army defender){
         this.attacker = attacker;
         this.defender = defender;
+        ArrayList<CombatLivingEntity> entityList = new ArrayList<>();
 
         int i = 0;
         for (CombatLivingEntity entity : attacker.getCombatEntities()){
             entity.setCombatEntityHandler(combatEntityHandler);
             combatEntityHandler.add(entity);
+            entityList.add(entity);
             entity.setPosition(startingPositions.get(i).copy());
             i++;
         }
@@ -81,12 +83,15 @@ public class GameCombat {
         for (CombatLivingEntity entity : defender.getCombatEntities()){
             entity.setCombatEntityHandler(combatEntityHandler);
             combatEntityHandler.add(entity);
+            entityList.add(entity);
+            entity.setFacingRight(false);
 
             Vector2D defenderStart = startingPositions.get(i).copy();
             defenderStart.addX(ARENA_SIZE.getWidth() - 1);
             entity.setPosition(defenderStart);
             i++;
         }
+        combatTurn = new CombatTurn(entityList);
     }
 
     public void cleanUpBattlefield(){
@@ -102,17 +107,10 @@ public class GameCombat {
     public void onMouseClick(Vector2D mousePos, int mouseButton) {
         Vector2D mouseMapFocus = new Vector2D(mousePos.getX() / focus.getTileSize(), mousePos.getY() / focus.getTileSize());
         Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
-        if(mouseButton == 1){
-            for (Entity entity : combatEntityHandler.getIterator()) {
-                if (entity.isOverlap(mouseAbsolutePos) && entity.getEntityType() == EntityType.LIVING){
-                    entityFocus = (LivingEntity)entity;
-                    return;
-                }
-            }
-        }
-        else if (mouseButton == 3 && entityFocus != null){
+        if (mouseButton == 3){
             PathMap map = new PathMap(ARENA_SIZE, getBlocked());
-            entityFocus.onMouseClick3(map, finder, mouseAbsolutePos);
+            combatTurn.getCurrentEntityTurn().onMouseClick3(map, finder, mouseAbsolutePos);
+            combatTurn.endEntityTurn();
         }
     }
 

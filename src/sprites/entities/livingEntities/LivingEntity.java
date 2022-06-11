@@ -118,16 +118,24 @@ public abstract class LivingEntity extends Entity {
         drawPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSETS.get(character));
     }
 
+    public void setFacingRight(boolean isFacingRight){
+        this.facingRight = isFacingRight;
+    }
+
     protected void drawBanner(Graphics g, JComponent gc){
         if(flag != null){
             g.drawImage(flag, (int) relativePosition.getX(), (int) relativePosition.getY(), gc);
         }
     }
 
-    protected void drawSizeRect(Graphics g, JComponent gc){
-        g.setColor(Color.CYAN);
-        g.drawRect((int)(relativePosition.getX()), (int)(relativePosition.getY()),
+    protected void drawSizeRect(Graphics g){
+        Graphics2D g2 = (Graphics2D) g;
+        Stroke oldStroke = g2.getStroke();
+        g2.setStroke(new BasicStroke(4));
+        g2.setColor(Color.CYAN);
+        g2.drawRect((int)(relativePosition.getX()), (int)(relativePosition.getY()),
                 (int)(size.getX() * tileSize), (int)(size.getY() * tileSize));
+        g2.setStroke(oldStroke);
     }
 
     @Override
