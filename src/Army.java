@@ -13,31 +13,21 @@ import java.util.List;
 public class Army {
     private final PlayerTeam team;
     private final ArrayList<CombatLivingEntity> combatEntities;
-    private final List<Vector2D> startingPositions;
+
 
     public Army(PlayerTeam team){
         this.team = team;
         combatEntities = new ArrayList<>();
-        startingPositions = Arrays.asList(new Vector2D(),
-                new Vector2D(0, 1), new Vector2D(0, 2), new Vector2D(0, 3),
-                new Vector2D(0, 4), new Vector2D(0, 5), new Vector2D(0, 6));
 
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), Character.CharacterEnum.NINJA_4, team));
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), Character.CharacterEnum.NINJA_5, team));
-        combatEntities.add(new CombatLivingEntity(startingPositions.get(0), Character.CharacterEnum.NINJA_6, team));
-    }
-
-    public void setCombatEntities(EntityHandler combatEntityHandler) {
-        for (CombatLivingEntity entity : combatEntities){
-            entity.setCombatEntityHandler(combatEntityHandler);
-        }
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_1, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_2, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_3, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_4, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_5, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_6, team));
     }
 
     public ArrayList<CombatLivingEntity> getCombatEntities() {
         return combatEntities;
-    }
-
-    public List<Vector2D> getStartingPositions() {
-        return startingPositions;
     }
 }

@@ -10,14 +10,12 @@ import src.tools.time.DeltaTime;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
 
 public class CombatLivingEntity extends LivingEntity {
     protected CombatStats stats;
-    protected Random rnd = new Random();
 
-    public CombatLivingEntity(Vector2D position, Character.CharacterEnum character, PlayerTeam team) {
-        super(position, character, team, null);
+    public CombatLivingEntity(Character.CharacterEnum character, PlayerTeam team) {
+        super(new Vector2D(), character, team, null);
         timeBetweenMoves = 0.5;
         stats = new CombatStats(1, character);
     }
@@ -50,13 +48,7 @@ public class CombatLivingEntity extends LivingEntity {
         int damage = stats.rollDamage();
         entity.underAttack(damage);
 
-        LivingEntityState attackAnimation;
-        int AttackInt = rnd.nextInt(2);
-        if (AttackInt == 1){
-            attackAnimation = LivingEntityState.ATTACK1;
-        }
-        else attackAnimation = LivingEntityState.ATTACK2;
-        animation.setAndForceAnimation(attackAnimation, LivingEntityState.IDLE);
+        animation.setAndForceAnimation(LivingEntityState.ATTACK1, LivingEntityState.IDLE);
     }
 
     public void underAttack(int damage){

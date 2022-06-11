@@ -17,6 +17,8 @@ import src.tools.time.DeltaTime;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GameCombat {
     public static final Dimension ARENA_SIZE = new Dimension(18, 10);
@@ -26,7 +28,8 @@ public class GameCombat {
     private final EntityHandler combatEntityHandler;
     private final WindowFocus focus;
     private LivingEntity entityFocus;
-    private PathFinder finder;
+    private final PathFinder finder;
+    private final List<Vector2D> startingPositions;
 
     public GameCombat(Game game){
         this.game = game;
@@ -42,6 +45,11 @@ public class GameCombat {
         this.focus = new WindowFocus(focusPos, screenSize, ARENA_SIZE, gridTile);
 
         combatSpriteHandler.setBackground(factory.getCombatBackground());
+
+
+        startingPositions = Arrays.asList(new Vector2D(),
+                new Vector2D(0, 1), new Vector2D(0, 2), new Vector2D(0, 3),
+                new Vector2D(0, 4), new Vector2D(0, 5), new Vector2D(0, 6));
     }
 
     public Iterable<Sprite> getIterator(){
@@ -60,18 +68,23 @@ public class GameCombat {
     public void setUpBattlefield(Army attacker, Army defender){
         this.attacker = attacker;
         this.defender = defender;
-        attacker.setCombatEntities(combatEntityHandler);
-        defender.setCombatEntities(combatEntityHandler);
 
         int i = 0;
         for (CombatLivingEntity entity : attacker.getCombatEntities()){
+            entity.setCombatEntityHandler(combatEntityHandler);
             combatEntityHandler.add(entity);
-            entity.setPosition(attacker.getStartingPositions().get(i));
+            entity.setPosition(startingPositions.get(i).copy());
             i++;
         }
+
+        i=0;
         for (CombatLivingEntity entity : defender.getCombatEntities()){
+            entity.setCombatEntityHandler(combatEntityHandler);
             combatEntityHandler.add(entity);
-            entity.setPosition(defender.getStartingPositions().get(i));
+
+            Vector2D defenderStart = startingPositions.get(i).copy();
+            defenderStart.addX(ARENA_SIZE.getWidth() - 1);
+            entity.setPosition(defenderStart);
             i++;
         }
     }

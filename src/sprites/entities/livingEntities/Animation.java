@@ -9,6 +9,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import static src.tools.image.BufferedImageMirror.mirrorHorizontally;
+
 public class Animation {
     private LivingEntityState entityState;
     private LivingEntityState queuedState;
@@ -23,7 +25,7 @@ public class Animation {
     final private static Map<LivingEntityState, Integer> animationStateLength = Map.ofEntries(
             Map.entry(LivingEntityState.IDLE, 4), Map.entry(LivingEntityState.RUN, 8),
             Map.entry(LivingEntityState.JUMP, 2), Map.entry(LivingEntityState.FALL, 2),
-            Map.entry(LivingEntityState.ATTACK1, 4), Map.entry(LivingEntityState.ATTACK2, 4),
+            Map.entry(LivingEntityState.ATTACK1, 8),
             Map.entry(LivingEntityState.HIT, 4), Map.entry(LivingEntityState.DEATH, 3),
             Map.entry(LivingEntityState.DEAD, 1)
     );
@@ -55,8 +57,9 @@ public class Animation {
         currentFrame = (int)(timer.getElapsedSeconds()/ timeBetweenFrames);
     }
 
-    public BufferedImage getAnimationFrame(){
-        return stateAnimations.get(entityState).get(currentFrame);
+    public BufferedImage getAnimationFrame(boolean facingRight){
+        if (facingRight) return stateAnimations.get(entityState).get(currentFrame);
+        return mirrorHorizontally(stateAnimations.get(entityState).get(currentFrame));
     }
 
     /**

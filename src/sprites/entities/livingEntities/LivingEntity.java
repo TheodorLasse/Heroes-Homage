@@ -22,6 +22,7 @@ public abstract class LivingEntity extends Entity {
     protected Animation animation;
     protected LivingEntityState entityState;
     protected boolean alive = true;
+    protected boolean facingRight = true;
     protected PlayerTeam team;
     protected EntityHandler entityHandler;
     protected BufferedImage flag;
@@ -45,7 +46,7 @@ public abstract class LivingEntity extends Entity {
         this.character = character;
         this.entityState = LivingEntityState.IDLE;
         this.animation = new Animation(character, entityState);
-        this.texture = animation.getAnimationFrame();
+        this.texture = animation.getAnimationFrame(facingRight);
         setEntityType(EntityType.LIVING);
 
         switch (team.getTeamColor()){
@@ -60,7 +61,7 @@ public abstract class LivingEntity extends Entity {
         super.update(deltaTime, focus);
         if (alive) move(deltaTime);
         animation.update(deltaTime);
-        this.texture = animation.getAnimationFrame();
+        this.texture = animation.getAnimationFrame(facingRight);
         this.tileSize = focus.getTileSize();
     }
 
@@ -74,6 +75,8 @@ public abstract class LivingEntity extends Entity {
         Vector2D direction = new Vector2D((path.getX(0) - position.getX()) * directionLength,
                 (path.getY(0) - position.getY()) * directionLength);
         drawPosition = Vector2D.getSum(direction, drawPosition);
+
+        if (direction.getX() != 0) facingRight = direction.getX() > 0;
 
         timeUntilMove -= deltaTime.getSeconds();
         if (timeUntilMove <= 0){
