@@ -109,8 +109,10 @@ public class GameCombat {
         Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
         if (mouseButton == 3){
             PathMap map = new PathMap(ARENA_SIZE, getBlocked());
-            combatTurn.getCurrentEntityTurn().onMouseClick3(map, finder, mouseAbsolutePos);
-            combatTurn.endEntityTurn();
+            if(combatTurn.getCurrentEntityTurn().onMouseClick3(map, finder, mouseAbsolutePos)) {
+                combatTurn.endEntityTurn();
+            }
+
         }
     }
 

@@ -35,7 +35,7 @@ public class CombatStats {
      */
     public int rollDamage(){
         if (stackSize <= 0) return 0;
-        return rnd.nextInt(minDamage * stackSize, maxDamage * stackSize);
+        return rnd.nextInt((maxDamage - minDamage) * stackSize) + minDamage * stackSize;
     }
 
     /**

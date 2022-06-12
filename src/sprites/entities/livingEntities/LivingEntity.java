@@ -87,35 +87,56 @@ public abstract class LivingEntity extends Entity {
         }
     }
 
-    protected void interact(Vector2D position){
+    protected boolean interact(Vector2D position){
+        boolean performedAction = false;
         for (Entity entity : entityHandler.getIterator()){
-            if (entity.isOverlap(position) && entity != this){
+            if (entity.isOverlap(position) && interactConditions(entity)){
                 interactAction(entity);
+                performedAction = true;
             }
         }
+        return performedAction;
+    }
+
+    protected boolean interactConditions(Entity entity){
+        return entity != this;
     }
 
     protected void interactAction(Entity entity){
     }
 
+    /**
+     * Function called on right click button
+     * @param map map to be used when creating a path for movement
+     * @param finder PathFinder object
+     * @param mouseMapPos Position of mouse
+     * @return if the move was legal or not (if the move wasn't legal, maybe don't "use" up the Entity's turn)
+     */
     @Override
-    public void onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
-        if (!alive) return;
+    public boolean onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
+        if (!alive) return false;
+
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
         Vector2D diff = Vector2D.getDifference(position, mouseRounded);
         if (diff.getLength() <= 1.42){
-            interact(mouseMapPos);
+            return interact(mouseMapPos);
         }
         finder.setMap(map);
         path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
                 (int)mouseRounded.getX(), (int)mouseRounded.getY());
-        animation.setAnimation(LivingEntityState.RUN);
+
+        if (path == null) {
+            return false;
+        } else {
+            animation.setAnimation(LivingEntityState.RUN);
+            return true;
+        }
     }
 
     @Override
     protected void updateRelativePos(WindowFocus focus) {
         super.updateRelativePos(focus);
-        drawPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSETS.get(character));
+        drawPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSET);
     }
 
     public void setFacingRight(boolean isFacingRight){

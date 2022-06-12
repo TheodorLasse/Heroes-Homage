@@ -44,8 +44,13 @@ public class CombatLivingEntity extends LivingEntity {
         }
     }
 
+    @Override
+    protected boolean interactConditions(Entity entity) {
+        return super.interactConditions(entity) && ((LivingEntity)entity).getPlayerTeam() != this.team;
+    }
+
     private void attack(CombatLivingEntity entity) {
-        if (entity.isDead()) return;
+        if (entity.isDead() || entity.getPlayerTeam() == this.team) return;
         int damage = stats.rollDamage();
         entity.underAttack(damage);
 

@@ -25,6 +25,7 @@ public abstract class Entity implements Sprite, Mover {
 
     protected Entity(final Vector2D position, final Vector2D size, final double rotation, final BufferedImage texture){
         this.position = position;
+        this.relativePosition = position;
         this.drawPosition = position;
         this.size = size;
         this.rotation = new Rotation(rotation);
@@ -64,7 +65,7 @@ public abstract class Entity implements Sprite, Mover {
         return isWithinX && isWithinY;
     }
 
-    public void onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {}
+    public boolean onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {return false;}
 
     @Override public Vector2D getPosition() {
         return position.copy();
