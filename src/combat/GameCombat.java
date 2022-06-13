@@ -30,6 +30,7 @@ public class GameCombat {
     private final PathFinder finder;
     private final List<Vector2D> startingPositions;
     private CombatTurn combatTurn;
+    private boolean entitiesStationary = true;
 
     public GameCombat(Game game){
         this.game = game;
@@ -59,9 +60,15 @@ public class GameCombat {
     }
 
     public void update(DeltaTime deltaTime) {
+        boolean stationaryTemp = true; //if set to false somewhere in for loop, keep it false
         for (Entity entity : combatEntityHandler.getIterator()) {
             entity.update(deltaTime, focus);
+            if (entity.getEntityType() == EntityType.LIVING && stationaryTemp){
+                stationaryTemp = ((LivingEntity)entity).isStationary();
+            }
         }
+
+        entitiesStationary = stationaryTemp;
         combatEntityHandler.update(deltaTime, focus);
     }
 
@@ -107,7 +114,7 @@ public class GameCombat {
     public void onMouseClick(Vector2D mousePos, int mouseButton) {
         Vector2D mouseMapFocus = new Vector2D(mousePos.getX() / focus.getTileSize(), mousePos.getY() / focus.getTileSize());
         Vector2D mouseAbsolutePos = relativeToAbsolutePos(mouseMapFocus);
-        if (mouseButton == 3){
+        if (mouseButton == 3 && entitiesStationary){ //if any entity is moving, don't register right clicks
             PathMap map = new PathMap(ARENA_SIZE, getBlocked());
             if(combatTurn.getCurrentEntityTurn().onMouseClick3(map, finder, mouseAbsolutePos)) {
                 combatTurn.endEntityTurn();

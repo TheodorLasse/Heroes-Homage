@@ -45,8 +45,9 @@ public class CombatLivingEntity extends LivingEntity {
     }
 
     @Override
-    protected boolean interactConditions(Entity entity) {
-        return super.interactConditions(entity) && ((LivingEntity)entity).getPlayerTeam() != this.team;
+    protected boolean interactConditions(Entity entity, Vector2D InteractPosition) {
+        return super.interactConditions(entity, InteractPosition) &&
+                ((LivingEntity)entity).getPlayerTeam() != this.team && ((LivingEntity)entity).alive;
     }
 
     private void attack(CombatLivingEntity entity) {

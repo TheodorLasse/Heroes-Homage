@@ -66,7 +66,7 @@ public abstract class LivingEntity extends Entity {
     }
 
     protected void move(DeltaTime deltaTime){
-        if (path == null || path.getLength() == 0) {
+        if (isStationary()) {
             animation.setAnimation(LivingEntityState.IDLE);
             return;
         }
@@ -87,10 +87,10 @@ public abstract class LivingEntity extends Entity {
         }
     }
 
-    protected boolean interact(Vector2D position){
+    protected boolean interact(Vector2D InteractPosition){
         boolean performedAction = false;
         for (Entity entity : entityHandler.getIterator()){
-            if (entity.isOverlap(position) && interactConditions(entity)){
+            if (interactConditions(entity, InteractPosition)){
                 interactAction(entity);
                 performedAction = true;
             }
@@ -98,8 +98,13 @@ public abstract class LivingEntity extends Entity {
         return performedAction;
     }
 
-    protected boolean interactConditions(Entity entity){
-        return entity != this;
+    /**
+     * Conditions that need to be met in order for an interaction to take place and be considered legal
+     * @param entity Entity to check conditions against
+     * @return true: the interaction is legal and takes place, false: do nothing since it's an illegal interaction
+     */
+    protected boolean interactConditions(Entity entity, Vector2D InteractPosition){
+        return entity.isOverlap(InteractPosition) && entity != this;
     }
 
     protected void interactAction(Entity entity){
@@ -118,15 +123,16 @@ public abstract class LivingEntity extends Entity {
 
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
         Vector2D diff = Vector2D.getDifference(position, mouseRounded);
+        boolean interactBool = false;
         if (diff.getLength() <= 1.42){
-            return interact(mouseMapPos);
+            interactBool = interact(mouseMapPos);
         }
         finder.setMap(map);
         path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
                 (int)mouseRounded.getX(), (int)mouseRounded.getY());
 
         if (path == null) {
-            return false;
+            return interactBool;
         } else {
             animation.setAnimation(LivingEntityState.RUN);
             return true;
@@ -167,5 +173,13 @@ public abstract class LivingEntity extends Entity {
 
     public PlayerTeam getPlayerTeam(){
         return team;
+    }
+
+    /**
+     * is the entity stationary, true or false.
+     * @return true: the entity is stationary, false: the entity is moving
+     */
+    public boolean isStationary(){
+        return path == null || path.getLength() == 0;
     }
 }
