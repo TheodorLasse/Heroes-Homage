@@ -24,7 +24,7 @@ public class Army {
         combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_3, team));
         combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_4, team));
         combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_5, team));
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_6, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.BLACK_DRAGON, team));
     }
 
     public ArrayList<CombatLivingEntity> getCombatEntities() {

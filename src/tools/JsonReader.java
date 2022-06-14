@@ -26,7 +26,8 @@ public class JsonReader
             Map.entry(Character.CharacterEnum.NINJA_3, "ninja_3"),
             Map.entry(Character.CharacterEnum.NINJA_4, "ninja_4"),
             Map.entry(Character.CharacterEnum.NINJA_5, "ninja_5"),
-            Map.entry(Character.CharacterEnum.NINJA_6, "ninja_6")
+            Map.entry(Character.CharacterEnum.NINJA_6, "ninja_6"),
+            Map.entry(Character.CharacterEnum.BLACK_DRAGON, "black_dragon")
             );
 
     public static Map<?, ?> readJson(Character.CharacterEnum character) throws IOException {

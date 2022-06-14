@@ -12,6 +12,6 @@ public class Character {
 
     public enum CharacterEnum
     {
-        NINJA_1, NINJA_2, NINJA_3, NINJA_4, NINJA_5, NINJA_6
+        NINJA_1, NINJA_2, NINJA_3, NINJA_4, NINJA_5, NINJA_6, BLACK_DRAGON
     }
 }

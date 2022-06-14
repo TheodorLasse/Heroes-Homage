@@ -3,6 +3,7 @@ package src.map;
 import src.Game;
 import src.player.PlayerTeam;
 import src.player.PlayerTeamColor;
+import src.player.Resource;
 import src.sprites.entities.*;
 import src.sprites.entities.livingEntities.Character;
 import src.sprites.entities.livingEntities.LivingEntity;
@@ -41,7 +42,6 @@ public class GameMap implements GameKeyListener {
 
     private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
-
     private final WindowFocus windowFocus;
     private final MapTurn mapTurn;
     private LivingEntity entityFocus;
@@ -70,7 +70,10 @@ public class GameMap implements GameKeyListener {
             mapSpriteHandler.add(borderTexture, SpriteLayer.LAST);
         }
 
-        mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK), playerTeamList.get(0)));
+        mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
+        mapEntityHandler.add(new CollectableMapEntity(new Vector2D(15, 12), Resource.GOLD, mapEntityHandler));
+        mapEntityHandler.add(new CollectableMapEntity(new Vector2D(18, 12), Resource.WOOD, mapEntityHandler));
+        mapEntityHandler.add(new CollectableMapEntity(new Vector2D(21, 12), Resource.ORE, mapEntityHandler));
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Character.CharacterEnum.NINJA_1, game, playerTeamList.get(0), mapEntityHandler));
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), Character.CharacterEnum.NINJA_1, game, playerTeamList.get(1), mapEntityHandler));
     }

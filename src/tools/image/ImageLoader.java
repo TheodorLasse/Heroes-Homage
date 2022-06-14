@@ -1,5 +1,6 @@
 package src.tools.image;
 
+import src.player.Resource;
 import src.sprites.entities.livingEntities.Character;
 
 import javax.imageio.ImageIO;
@@ -80,40 +81,22 @@ public class ImageLoader
             Map.entry(NinjaSheetName.NINJA_SHEET_31, "Sheets/ninja_f31"),
             Map.entry(NinjaSheetName.NINJA_SHEET_32, "Sheets/ninja_f32"));
 
+    final private static Map<Resource, String> RESOURCE_MAP = Map.ofEntries(
+            Map.entry(Resource.GOLD, "Resources/gold"),
+            Map.entry(Resource.ORE, "Resources/ore"),
+            Map.entry(Resource.WOOD, "Resources/wood"),
+            Map.entry(Resource.GEM, "Resources/gem"),
+            Map.entry(Resource.MERCURY, "Resources/mercury"),
+            Map.entry(Resource.CRYSTAL, "Resources/crystal"),
+            Map.entry(Resource.SULPHUR, "Resources/sulphur"));
+
     private final Map<ImageName, BufferedImage> images;
-    private final Map<NinjaSheetName, BufferedImage> ninjaImages;
-
+    private final Map<Resource, BufferedImage> resources;
     private final Map<Character.CharacterEnum, List<BufferedImage>> animations;
-
-    /**
-     * Cuts a sheet into sub images and puts them each into a List<BufferedImage>
-     * @param sheet Sheet to process
-     * @param startRow Row from which it will start taking images from
-     *                 (i.e, start from row index 2, so skip index 0 and 1)
-     * @param endRow Row from which it will stop taking images from
-     *               (i.e, end at index 5, so everything below will be ignored)
-     * @param tilesPerRow Amount of sub images per row that are to be extracted
-     *                    (i.e 3 characters per row)
-     * @param characters List of character to add images to animation lists
-     */
-    private void loadSheet(BufferedImage sheet, int startRow, int endRow,
-                                                 int tilesPerRow, List<Character.CharacterEnum> characters){
-        int tileWidth = sheet.getWidth() / tilesPerRow;
-        int tileHeight = sheet.getHeight() / endRow;
-
-        for (int k = 0; k < endRow; k++) {
-            for (int i = 0; i < tilesPerRow; i++) {
-                int index = k * tilesPerRow + i;
-                Character.CharacterEnum iterCharacter = characters.get(index);
-                animations.get(iterCharacter).add(sheet.getSubimage(
-                        i * tileWidth, (startRow + k) * tileHeight, tileWidth, tileHeight));
-            }
-        }
-    }
 
     public ImageLoader() {
         images = new EnumMap<>(ImageName.class);
-        ninjaImages = new EnumMap<>(NinjaSheetName.class);
+        resources = new EnumMap<>(Resource.class);
         animations = new EnumMap<>(Character.CharacterEnum.class);
     }
 
@@ -137,6 +120,8 @@ public class ImageLoader
      */
     public List<BufferedImage> getCharacter(Character.CharacterEnum character) {return animations.get(character); }
 
+    public BufferedImage getResourceImage(Resource resource) {return resources.get(resource); }
+
     /**
      * Loads all images and creates sheets.
      */
@@ -158,11 +143,9 @@ public class ImageLoader
         int endRow = 2;
         int tilesPerRow = 3;
 
-        List<Character.CharacterEnum> ninjas = Arrays.asList(Character.CharacterEnum.NINJA_1, Character.CharacterEnum.NINJA_2, Character.CharacterEnum.NINJA_3,
+        List<Character.CharacterEnum> ninjas = Arrays.asList(Character.CharacterEnum.NINJA_1,
+                Character.CharacterEnum.NINJA_2, Character.CharacterEnum.NINJA_3,
                 Character.CharacterEnum.NINJA_4, Character.CharacterEnum.NINJA_5, Character.CharacterEnum.NINJA_6);
-        for (Character.CharacterEnum ninja : ninjas){
-            animations.put(ninja, new ArrayList<>());
-        }
 
         for (NinjaSheetName sheet: NinjaSheetName.values()){
             final String name = "images/" + NINJA_SHEET_NAME_MAP.get(sheet) + ".png";
@@ -172,14 +155,39 @@ public class ImageLoader
                 throw new FileNotFoundException("Could not find resource " + name);
             }
 
-            ninjaImages.put(sheet, loadImage(imgURL));
-            loadSheet(ninjaImages.get(sheet), startRow, endRow, tilesPerRow, ninjas);
+            loadSheet(loadImage(imgURL), startRow, endRow, tilesPerRow, ninjas);
         }
     }
 
+    private void loadResources() throws IOException {
+        for (Resource iterResource: Resource.values()){
+            final String name = "images/" + RESOURCE_MAP.get(iterResource) + ".png";
+            final URL imgURL = ClassLoader.getSystemResource(name);
+
+            if (imgURL == null) {
+                throw new FileNotFoundException("Could not find resource " + name);
+            }
+            resources.put(iterResource, loadImage(imgURL));
+        }
+    }
+
+    private void loadBlackDragon() throws IOException {
+        final String name = "images/blackDragon.png";
+        final URL imgURL = ClassLoader.getSystemResource(name);
+        if (imgURL == null) {
+            throw new FileNotFoundException("Could not find resource " + name);
+        }
+        loadIndividualSheet(loadImage(imgURL), 0, 6, 30, Character.CharacterEnum.BLACK_DRAGON);
+    }
+
     public void loadAssets() throws IOException {
+        for (Character.CharacterEnum iterChar : Character.CharacterEnum.values()){
+            animations.put(iterChar, new ArrayList<>());
+        }
         loadImages();
         loadNinjas();
+        loadResources();
+        loadBlackDragon();
     }
 
     /**
@@ -192,5 +200,57 @@ public class ImageLoader
      */
     private static BufferedImage loadImage(URL url) throws IOException {
         return ImageIO.read(url);
+    }
+
+    /**
+     * Cuts a sheet into sub images and puts them each into a List<BufferedImage>. This function is used for when
+     * many characters share the same image for specific parts of an animation.
+     * @param sheet Sheet to process
+     * @param startRow Row from which it will start taking images from
+     *                 (i.e, start from row index 2, so skip index 0 and 1)
+     * @param endRow Row from which it will stop taking images from
+     *               (i.e, end at index 5, so everything below will be ignored)
+     * @param tilesPerRow Amount of sub images per row that are to be extracted
+     *                    (i.e 3 characters per row)
+     * @param characters List of character to add images to animation lists
+     */
+    private void loadSheet(BufferedImage sheet, int startRow, int endRow,
+                           int tilesPerRow, List<Character.CharacterEnum> characters){
+        int tileWidth = sheet.getWidth() / tilesPerRow;
+        int tileHeight = sheet.getHeight() / endRow;
+
+        for (int k = 0; k < endRow; k++) {
+            for (int i = 0; i < tilesPerRow; i++) {
+                int index = k * tilesPerRow + i;
+                Character.CharacterEnum iterCharacter = characters.get(index);
+                animations.get(iterCharacter).add(sheet.getSubimage(
+                        i * tileWidth, (startRow + k) * tileHeight, tileWidth, tileHeight));
+            }
+        }
+    }
+
+    /**
+     * Cuts a sheet into sub images and puts them each into a List<BufferedImage>. This function is used for the type
+     * of sheet where an entire character's animation is on one sheet.
+     * @param sheet Sheet to process
+     * @param startRow Row from which it will start taking images from
+     *                 (i.e, start from row index 2, so skip index 0 and 1)
+     * @param endRow Row from which it will stop taking images from
+     *               (i.e, end at index 5, so everything below will be ignored)
+     * @param tilesPerRow Amount of sub images per row that are to be extracted
+     *                    (i.e 3 characters per row)
+     * @param character Which character to load with the images created
+     */
+    private void loadIndividualSheet(BufferedImage sheet, int startRow, int endRow,
+                           int tilesPerRow, Character.CharacterEnum character){
+        int tileWidth = sheet.getWidth() / tilesPerRow;
+        int tileHeight = sheet.getHeight() / endRow;
+
+        for (int k = 0; k < endRow; k++) {
+            for (int i = 0; i < tilesPerRow; i++) {
+                animations.get(character).add(sheet.getSubimage(
+                        i * tileWidth, (startRow + k) * tileHeight, tileWidth, tileHeight));
+            }
+        }
     }
 }

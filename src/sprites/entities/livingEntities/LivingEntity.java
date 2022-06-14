@@ -29,7 +29,6 @@ public abstract class LivingEntity extends Entity {
     protected Path path;
     protected double timeUntilMove = 0;
     protected double timeBetweenMoves = 0.2;
-
     protected int tileSize = 0;
 
     /**

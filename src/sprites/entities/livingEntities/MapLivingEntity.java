@@ -3,6 +3,7 @@ package src.sprites.entities.livingEntities;
 import src.Army;
 import src.Game;
 import src.player.PlayerTeam;
+import src.sprites.entities.CollectableMapEntity;
 import src.sprites.entities.Entity;
 import src.sprites.entities.EntityHandler;
 import src.tools.Vector2D;
@@ -34,6 +35,10 @@ public class MapLivingEntity extends LivingEntity {
                 if (otherEntity.getPlayerTeam() != this.team) {
                     game.newCombat(this.army, otherEntity.getArmy());
                 }
+            }
+            case COLLECTABLE -> {
+                CollectableMapEntity otherEntity = (CollectableMapEntity) entity;
+                getPlayerTeam().getPlayerResources().addResource(otherEntity.getResource(), otherEntity.getAmount());
             }
         }
     }
