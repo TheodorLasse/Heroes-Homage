@@ -1,6 +1,7 @@
 package src.sprites.entities.livingEntities;
 
 import src.Game;
+import src.tools.Rotation;
 import src.tools.time.DeltaTime;
 import src.tools.time.DeltaTimer;
 
@@ -14,52 +15,43 @@ import static src.tools.image.BufferedImageMirror.mirrorHorizontally;
 public class Animation {
     private LivingEntityState entityState;
     private LivingEntityState queuedState;
-    private final Map<LivingEntityState, List<BufferedImage>> stateAnimations;
+    private final Map<LivingEntityState, AnimationComponent> stateAnimations;
     private int currentFrame;
     private final DeltaTimer timer;
     private boolean forceAnimation = false;
 
-    /**
-     * From enum to state length
-     */
-    final private static Map<LivingEntityState, Integer> animationStateLength = Map.ofEntries(
-            Map.entry(LivingEntityState.IDLE, 4), Map.entry(LivingEntityState.RUN, 8),
-            Map.entry(LivingEntityState.JUMP, 2), Map.entry(LivingEntityState.FALL, 2),
-            Map.entry(LivingEntityState.ATTACK1, 8),
-            Map.entry(LivingEntityState.HIT, 4), Map.entry(LivingEntityState.DEATH, 3),
-            Map.entry(LivingEntityState.DEAD, 1)
-    );
-
-    public Animation(Character.CharacterEnum character, LivingEntityState entityState){
-        this.entityState = entityState;
+    public Animation(Character.CharacterEnum character){
+        this.entityState = LivingEntityState.IDLE;
         stateAnimations = new EnumMap<>(LivingEntityState.class);
-        List<BufferedImage> allFrames = Game.imageLoader.getCharacter(character);
 
-        int i = 0;
         for (LivingEntityState state: LivingEntityState.values()){
-            stateAnimations.put(state, allFrames.subList(i, i + animationStateLength.get(state)));
-            i += animationStateLength.get(state);
+            stateAnimations.put(state, Game.imageLoader.getCharacterAnimation(character, state));
         }
         timer = new DeltaTimer();
     }
 
     public void update(DeltaTime deltaTime){
         timer.update(deltaTime);
-        final double timeBetweenFrames = 0.3;
-        List<BufferedImage> currentList = stateAnimations.get(entityState);
-        if (timer.getElapsedSeconds() > timeBetweenFrames * currentList.size()) {
-            if (forceAnimation) {
-                forceAnimation = false;
-                setAnimation(queuedState);
-            }
-            timer.restart();
+        final double timeBetweenFrames = 0.2;
+        final double animationTime = timeBetweenFrames * stateAnimations.get(entityState).getAnimationLength();
+        if (forceAnimation && timer.getElapsedSeconds() > animationTime) {
+            forceAnimation = false;
+            setAnimation(queuedState);
         }
-        currentFrame = (int)(timer.getElapsedSeconds()/ timeBetweenFrames);
+
+        currentFrame = (int)(timer.getElapsedSeconds() / timeBetweenFrames);
     }
 
-    public BufferedImage getAnimationFrame(boolean facingRight){
-        if (facingRight) return stateAnimations.get(entityState).get(currentFrame);
-        return mirrorHorizontally(stateAnimations.get(entityState).get(currentFrame));
+    public BufferedImage getAnimationFrame(Rotation rotation){
+        double radiansPerIndex = Math.PI / 4;
+        double rotationRadians = rotation.getRadians();
+        double excessRadians = rotationRadians % radiansPerIndex;
+        int rotationIndex = (int)((rotationRadians - excessRadians) / radiansPerIndex);
+        return stateAnimations.get(entityState).getAnimationFrame(rotationIndex, currentFrame);
+    }
+
+    public LivingEntityState getEntityState() {
+        return entityState;
     }
 
     /**
@@ -83,5 +75,6 @@ public class Animation {
         setAnimation(state);
         forceAnimation = true;
         queuedState = nextState;
+        timer.restart();
     }
 }

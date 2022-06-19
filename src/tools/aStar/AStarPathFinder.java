@@ -2,6 +2,8 @@ package src.tools.aStar;
 
 
 import src.tools.aStar.heuristics.ClosestHeuristic;
+import src.tools.aStar.heuristics.ClosestSquaredHeuristic;
+import src.tools.aStar.heuristics.ManhattanHeuristic;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class AStarPathFinder implements PathFinder {
     private AStarHeuristic heuristic;
 
     public AStarPathFinder(TileBasedMap map, int maxSearchDistance, boolean allowDiagMovement) {
-        this(map, maxSearchDistance, allowDiagMovement, new ClosestHeuristic());
+        this(map, maxSearchDistance, allowDiagMovement, new ClosestSquaredHeuristic());
     }
 
     public AStarPathFinder(TileBasedMap map, int maxSearchDistance, boolean allowDiagMovement, AStarHeuristic heuristic) {

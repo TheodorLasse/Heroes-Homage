@@ -33,7 +33,6 @@ import java.util.List;
 
 public class GameMap implements GameKeyListener {
     public static final int TILE_SIZE = 20;
-    private final Game game;
     private final List<List<MapTileType>> mapTiles;
     private final SpriteHandler mapSpriteHandler;
     private final EntityHandler mapEntityHandler;
@@ -54,7 +53,6 @@ public class GameMap implements GameKeyListener {
      */
     public GameMap(Game game, Dimension screenSize, ArrayList<PlayerTeam> playerTeamList)
     {
-        this.game = game;
         this.screenSize = screenSize;
         finder = new AStarPathFinder(new PathMap(mapSize, null), 500, true);
         mapSpriteHandler = new SpriteHandler();
@@ -74,8 +72,8 @@ public class GameMap implements GameKeyListener {
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(15, 12), Resource.GOLD, mapEntityHandler));
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(18, 12), Resource.WOOD, mapEntityHandler));
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(21, 12), Resource.ORE, mapEntityHandler));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Character.CharacterEnum.NINJA_1, game, playerTeamList.get(0), mapEntityHandler));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), Character.CharacterEnum.NINJA_1, game, playerTeamList.get(1), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Character.CharacterEnum.ORC, game, playerTeamList.get(0), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), Character.CharacterEnum.ORC, game, playerTeamList.get(1), mapEntityHandler));
     }
 
     /**

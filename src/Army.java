@@ -19,12 +19,7 @@ public class Army {
         this.team = team;
         combatEntities = new ArrayList<>();
 
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_1, team));
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_2, team));
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_3, team));
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_4, team));
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.NINJA_5, team));
-        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.BLACK_DRAGON, team));
+        combatEntities.add(new CombatLivingEntity(Character.CharacterEnum.ORC, team));
     }
 
     public ArrayList<CombatLivingEntity> getCombatEntities() {

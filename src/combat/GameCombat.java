@@ -22,6 +22,7 @@ import java.util.List;
 
 public class GameCombat {
     public static final Dimension ARENA_SIZE = new Dimension(18, 10);
+    private final int gridSquareLength;
     private final Game game;
     private Army attacker, defender;
     private final SpriteHandler combatSpriteHandler;
@@ -39,11 +40,11 @@ public class GameCombat {
         finder = new AStarPathFinder(new PathMap(ARENA_SIZE, null), 50, true);
         CombatSpriteFactory factory = new CombatSpriteFactory(game.getCombatScreenDimension());
 
-        int gridTile = factory.getGridSquareLength();
+        gridSquareLength = factory.getGridSquareLength();
         Vector2D gridPos = factory.getGridOffset(); // measured in pixels
-        Vector2D focusPos = new Vector2D(gridPos.getX() / gridTile, gridPos.getY() / gridTile); // measured in tiles
+        Vector2D focusPos = new Vector2D(gridPos.getX() / gridSquareLength, gridPos.getY() / gridSquareLength); // measured in tiles
         Dimension screenSize = game.getCombatScreenDimension();
-        this.focus = new WindowFocus(focusPos, screenSize, ARENA_SIZE, gridTile);
+        this.focus = new WindowFocus(focusPos, screenSize, ARENA_SIZE, gridSquareLength);
 
         combatSpriteHandler.setBackground(factory.getCombatBackground());
 
@@ -64,7 +65,8 @@ public class GameCombat {
         for (Entity entity : combatEntityHandler.getIterator()) {
             entity.update(deltaTime, focus);
             if (entity.getEntityType() == EntityType.LIVING && stationaryTemp){
-                stationaryTemp = ((LivingEntity)entity).isStationary();
+                LivingEntity livingEntity = (LivingEntity)entity;
+                stationaryTemp = livingEntity.isInactive();
             }
         }
 
@@ -82,19 +84,20 @@ public class GameCombat {
             entity.setCombatEntityHandler(combatEntityHandler);
             combatEntityHandler.add(entity);
             entityList.add(entity);
-            entity.setPosition(startingPositions.get(i).copy());
+
+            entity.setPosition(startingPositions.get(i));
             i++;
         }
 
-        i=0;
+        i = 0;
         for (CombatLivingEntity entity : defender.getCombatEntities()){
             entity.setCombatEntityHandler(combatEntityHandler);
             combatEntityHandler.add(entity);
             entityList.add(entity);
-            entity.setFacingRight(false);
 
             Vector2D defenderStart = startingPositions.get(i).copy();
-            defenderStart.addX(ARENA_SIZE.getWidth() - 1);
+            defenderStart.addX(ARENA_SIZE.getWidth() - 1 - entity.getSize().getX());
+
             entity.setPosition(defenderStart);
             i++;
         }

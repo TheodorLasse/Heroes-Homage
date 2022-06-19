@@ -4,6 +4,7 @@ import src.Game;
 import src.sprites.entities.Entity;
 import src.sprites.entities.EntityHandler;
 import src.sprites.entities.EntityType;
+import src.tools.Rotation;
 import src.tools.WindowFocus;
 import src.player.PlayerTeam;
 import src.tools.aStar.PathFinder;
@@ -20,15 +21,13 @@ import java.awt.image.BufferedImage;
 public abstract class LivingEntity extends Entity {
     protected Character.CharacterEnum character;
     protected Animation animation;
-    protected LivingEntityState entityState;
     protected boolean alive = true;
-    protected boolean facingRight = true;
     protected PlayerTeam team;
     protected EntityHandler entityHandler;
     protected BufferedImage flag;
     protected Path path;
     protected double timeUntilMove = 0;
-    protected double timeBetweenMoves = 0.2;
+    protected double timeBetweenMoves = 0.3;
     protected int tileSize = 0;
 
     /**
@@ -43,9 +42,8 @@ public abstract class LivingEntity extends Entity {
         this.entityHandler = entityHandler;
         this.team = team;
         this.character = character;
-        this.entityState = LivingEntityState.IDLE;
-        this.animation = new Animation(character, entityState);
-        this.texture = animation.getAnimationFrame(facingRight);
+        this.animation = new Animation(character);
+        this.texture = animation.getAnimationFrame(rotation);
         setEntityType(EntityType.LIVING);
 
         switch (team.getTeamColor()){
@@ -58,31 +56,36 @@ public abstract class LivingEntity extends Entity {
     @Override
     public void update(DeltaTime deltaTime, WindowFocus focus) {
         super.update(deltaTime, focus);
-        if (alive) move(deltaTime);
+        if (alive) move(deltaTime, focus);
         animation.update(deltaTime);
-        this.texture = animation.getAnimationFrame(facingRight);
+        this.texture = animation.getAnimationFrame(rotation);
         this.tileSize = focus.getTileSize();
     }
 
-    protected void move(DeltaTime deltaTime){
+    protected void move(DeltaTime deltaTime, WindowFocus focus){
         if (isStationary()) {
             animation.setAnimation(LivingEntityState.IDLE);
             return;
         }
-
-        double directionLength = (timeBetweenMoves - timeUntilMove) / deltaTime.getSeconds();
-        Vector2D direction = new Vector2D((path.getX(0) - position.getX()) * directionLength,
-                (path.getY(0) - position.getY()) * directionLength);
-        drawPosition = Vector2D.getSum(direction, drawPosition);
-
-        if (direction.getX() != 0) facingRight = direction.getX() > 0;
 
         timeUntilMove -= deltaTime.getSeconds();
         if (timeUntilMove <= 0){
             Path.Step nextStep = path.popStep();
             this.position.setX(nextStep.getX());
             this.position.setY(nextStep.getY());
+            updateRelativePos(focus);
             timeUntilMove = timeBetweenMoves;
+        }
+
+        if (!isStationary()) {
+            double directionLength = (1 - timeUntilMove / timeBetweenMoves) * tileSize;
+            Vector2D direction = new Vector2D(
+                    path.getX(0) - position.getX(),
+                    path.getY(0) - position.getY());
+            updateRotation(direction);
+            Vector2D directionAdjusted = Vector2D.getProduct(direction, directionLength);
+            drawPosition = Vector2D.getSum(directionAdjusted, drawPosition);
+
         }
     }
 
@@ -103,7 +106,7 @@ public abstract class LivingEntity extends Entity {
      * @return true: the interaction is legal and takes place, false: do nothing since it's an illegal interaction
      */
     protected boolean interactConditions(Entity entity, Vector2D InteractPosition){
-        return entity.isOverlap(InteractPosition) && entity != this;
+        return entity != this && entity.isOverlap(InteractPosition) ;
     }
 
     protected void interactAction(Entity entity){
@@ -126,6 +129,7 @@ public abstract class LivingEntity extends Entity {
         if (diff.getLength() <= 1.42){
             interactBool = interact(mouseMapPos);
         }
+
         finder.setMap(map);
         path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
                 (int)mouseRounded.getX(), (int)mouseRounded.getY());
@@ -144,8 +148,10 @@ public abstract class LivingEntity extends Entity {
         drawPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSET);
     }
 
-    public void setFacingRight(boolean isFacingRight){
-        this.facingRight = isFacingRight;
+    protected void updateRotation(Vector2D direction){
+        Rotation newRotation = new Rotation(Math.PI / 2);
+        newRotation.addRadians(direction.getAngle().getRadians());
+        this.rotation = newRotation;
     }
 
     protected void drawBanner(Graphics g, JComponent gc){
@@ -178,7 +184,11 @@ public abstract class LivingEntity extends Entity {
      * is the entity stationary, true or false.
      * @return true: the entity is stationary, false: the entity is moving
      */
-    public boolean isStationary(){
+    private boolean isStationary(){
         return path == null || path.getLength() == 0;
+    }
+
+    public boolean isInactive(){
+        return isStationary() && animation.getEntityState() == LivingEntityState.IDLE;
     }
 }

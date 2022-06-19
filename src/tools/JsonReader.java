@@ -21,13 +21,7 @@ public class JsonReader
     private static final Logger LOGGER = Logger.getLogger("");
 
     private static final Map<Character.CharacterEnum, String> CHARACTER_MAP = Map.ofEntries(
-            Map.entry(Character.CharacterEnum.NINJA_1, "ninja_1"),
-            Map.entry(Character.CharacterEnum.NINJA_2, "ninja_2"),
-            Map.entry(Character.CharacterEnum.NINJA_3, "ninja_3"),
-            Map.entry(Character.CharacterEnum.NINJA_4, "ninja_4"),
-            Map.entry(Character.CharacterEnum.NINJA_5, "ninja_5"),
-            Map.entry(Character.CharacterEnum.NINJA_6, "ninja_6"),
-            Map.entry(Character.CharacterEnum.BLACK_DRAGON, "black_dragon")
+            Map.entry(Character.CharacterEnum.ORC, "orc")
             );
 
     public static Map<?, ?> readJson(Character.CharacterEnum character) throws IOException {
@@ -35,7 +29,6 @@ public class JsonReader
 
         Gson gson = new Gson();
 
-        // The slash triggers a warning in the automatic code inspection. That can be ignored because this is a resource URL.
         final String name = "json/" + fileName + ".json";
         InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(name);
 

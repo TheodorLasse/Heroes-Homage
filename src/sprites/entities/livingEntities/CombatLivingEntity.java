@@ -96,10 +96,10 @@ public class CombatLivingEntity extends LivingEntity {
         final int bannerWidth = 26;
         final int bannerHeight = bannerWidth / 2;
 
-        final int bannerOffsetY = -18;
-        final int bannerOffsetX = 15;
-        final int drawX = (int)(relativePosition.getX() + bannerOffsetX);
-        final int drawY = (int)(relativePosition.getY() + bannerOffsetY);
+        final int bannerOffsetY = 40;
+        final int bannerOffsetX = 150;
+        final int drawX = (int)(drawPosition.getX() + bannerOffsetX);
+        final int drawY = (int)(drawPosition.getY() + bannerOffsetY);
 
         //Draw inside of rect
         g2.setColor(Color.GRAY);
