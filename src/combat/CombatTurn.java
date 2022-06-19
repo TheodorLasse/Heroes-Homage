@@ -1,12 +1,14 @@
 package src.combat;
 
 import src.sprites.entities.livingEntities.CombatLivingEntity;
+import src.tools.aStar.AStarPathFinder;
+import src.tools.aStar.PathFinder;
 
 import java.util.ArrayList;
 
 public class CombatTurn {
-    ArrayList<CombatLivingEntity> entities;
-    int entityIndex;
+    private final ArrayList<CombatLivingEntity> entities;
+    private int entityIndex;
 
     /**
      * Keeps track of which CombatLivingEntity's turn it currently is on the battlefield
@@ -17,7 +19,6 @@ public class CombatTurn {
         this.entities.sort(new InitiativeComparator());
         entityIndex = 0;
         entities.get(entityIndex).setEntityTurn(true);
-
     }
 
     public CombatLivingEntity getCurrentEntityTurn(){

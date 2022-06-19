@@ -2,6 +2,7 @@ package src.combat;
 
 import src.Army;
 import src.Game;
+import src.sprites.SpriteTexture;
 import src.sprites.entities.*;
 import src.sprites.entities.livingEntities.CombatLivingEntity;
 import src.sprites.entities.livingEntities.LivingEntity;
@@ -13,9 +14,11 @@ import src.tools.WindowFocus;
 import src.tools.aStar.AStarPathFinder;
 import src.tools.aStar.PathFinder;
 import src.tools.aStar.PathMap;
+import src.tools.aStar.heuristics.ClosestSquaredHeuristic;
 import src.tools.time.DeltaTime;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,9 +29,11 @@ public class GameCombat {
     private final Game game;
     private Army attacker, defender;
     private final SpriteHandler combatSpriteHandler;
+    private SpriteTexture movementShade;
     private final EntityHandler combatEntityHandler;
     private final WindowFocus focus;
     private final PathFinder finder;
+    private final CombatSpriteFactory factory;
     private final List<Vector2D> startingPositions;
     private CombatTurn combatTurn;
     private boolean entitiesStationary = true;
@@ -38,7 +43,7 @@ public class GameCombat {
         this.combatSpriteHandler = new SpriteHandler();
         this.combatEntityHandler = new EntityHandler();
         finder = new AStarPathFinder(new PathMap(ARENA_SIZE, null), 50, true);
-        CombatSpriteFactory factory = new CombatSpriteFactory(game.getCombatScreenDimension());
+        factory = new CombatSpriteFactory(game.getCombatScreenDimension());
 
         gridSquareLength = factory.getGridSquareLength();
         Vector2D gridPos = factory.getGridOffset(); // measured in pixels
@@ -47,7 +52,6 @@ public class GameCombat {
         this.focus = new WindowFocus(focusPos, screenSize, ARENA_SIZE, gridSquareLength);
 
         combatSpriteHandler.setBackground(factory.getCombatBackground());
-
 
         startingPositions = Arrays.asList(new Vector2D(),
                 new Vector2D(0, 1), new Vector2D(0, 2), new Vector2D(0, 3),
@@ -71,7 +75,24 @@ public class GameCombat {
         }
 
         entitiesStationary = stationaryTemp;
+        if (entitiesStationary) updateAllowedMovementShade();
+        else combatSpriteHandler.remove(movementShade);
+
+        combatSpriteHandler.update(deltaTime);
         combatEntityHandler.update(deltaTime, focus);
+    }
+
+    private void updateAllowedMovementShade(){
+        if (combatTurn == null) return;
+        CombatLivingEntity currentEntity = combatTurn.getCurrentEntityTurn();
+        PathFinder shadeFinder = new AStarPathFinder(new PathMap(ARENA_SIZE, getBlocked()), currentEntity.getMovement(),
+                true, new ClosestSquaredHeuristic());
+
+        boolean[][] moveMap = shadeFinder.getMovementShade(currentEntity);
+        BufferedImage movementShadeImage = factory.getMovementShade(moveMap);
+        SpriteTexture newShade = new SpriteTexture(new Vector2D(), 0, movementShadeImage);
+        combatSpriteHandler.renew(newShade, movementShade, SpriteLayer.FIRST);
+        movementShade = newShade;
     }
 
     public void setUpBattlefield(Army attacker, Army defender){

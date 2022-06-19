@@ -12,6 +12,7 @@ public class CombatSpriteFactory {
     private final BufferedImage top = Game.imageLoader.getImage(ImageLoader.ImageName.COMBAT_TOP);
     private final BufferedImage bottom = Game.imageLoader.getImage(ImageLoader.ImageName.COMBAT_BOTTOM);
     private final int gridOffsetY = top.getHeight() - bottom.getHeight();
+    private int gridOffsetX;
 
     public CombatSpriteFactory(Dimension screenSize){
         this.screenSize = screenSize;
@@ -37,7 +38,8 @@ public class CombatSpriteFactory {
         }
 
         BufferedImage grid = getCombatGrid();
-        g.drawImage(grid, (int)((screenSize.width - grid.getWidth()) * 0.5), gridOffsetY, null);
+        gridOffsetX = (int)((screenSize.width - grid.getWidth()) * 0.5);
+        g.drawImage(grid, gridOffsetX, gridOffsetY, null);
 
         return background;
     }
@@ -60,6 +62,36 @@ public class CombatSpriteFactory {
             }
         }
         return grid;
+    }
+
+    /**
+     * Returns the shaded area which illustrates where an entity can move
+     * @param moveMap the list of values which determines which grid squares get shaded
+     * @return BufferedImage of shaded area
+     */
+    public BufferedImage getMovementShade(boolean[][] moveMap){
+        int gridSquareLength = getGridSquareLength();
+
+        BufferedImage allowedMovement = new BufferedImage(
+                screenSize.width, screenSize.height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = (Graphics2D) allowedMovement.getGraphics();
+        float opacity = 0.5f;
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        g2.setColor(Color.LIGHT_GRAY);
+
+        for (int x = 0; x < moveMap.length; x++) {
+            for (int y = 0; y < moveMap[x].length; y++) {
+                if (!moveMap[x][y]) {
+                    int posX = gridOffsetX + x * gridSquareLength;
+                    int posY = gridOffsetY + y * gridSquareLength;
+                    g2.fillRect(posX, posY, gridSquareLength, gridSquareLength);
+                }
+            }
+        }
+
+
+
+        return allowedMovement;
     }
 
     public int getGridSquareLength(){

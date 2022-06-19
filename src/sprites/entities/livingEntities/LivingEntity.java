@@ -26,6 +26,7 @@ public abstract class LivingEntity extends Entity {
     protected EntityHandler entityHandler;
     protected BufferedImage flag;
     protected Path path;
+    protected int movement;
     protected double timeUntilMove = 0;
     protected double timeBetweenMoves = 0.3;
     protected int tileSize = 0;
@@ -44,6 +45,7 @@ public abstract class LivingEntity extends Entity {
         this.character = character;
         this.animation = new Animation(character);
         this.texture = animation.getAnimationFrame(rotation);
+        movement = 5;
         setEntityType(EntityType.LIVING);
 
         switch (team.getTeamColor()){
@@ -63,8 +65,9 @@ public abstract class LivingEntity extends Entity {
     }
 
     protected void move(DeltaTime deltaTime, WindowFocus focus){
-        if (isStationary()) {
+        if (isStationary() || getMovement() < 0) {
             animation.setAnimation(LivingEntityState.IDLE);
+            path = null;
             return;
         }
 
@@ -75,6 +78,7 @@ public abstract class LivingEntity extends Entity {
             this.position.setY(nextStep.getY());
             updateRelativePos(focus);
             timeUntilMove = timeBetweenMoves;
+            setMovement(getMovement() - 1);
         }
 
         if (!isStationary()) {
@@ -145,7 +149,6 @@ public abstract class LivingEntity extends Entity {
     @Override
     protected void updateRelativePos(WindowFocus focus) {
         super.updateRelativePos(focus);
-        drawPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSET);
     }
 
     protected void updateRotation(Vector2D direction){
@@ -172,8 +175,17 @@ public abstract class LivingEntity extends Entity {
 
     @Override
     public void draw(Graphics g, JComponent gc) {
-        super.draw(g, gc);
+        Vector2D offsetPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSET);
+        g.drawImage(getTexture(), (int) offsetPosition.getX(), (int) offsetPosition.getY(), gc);
         drawBanner(g, gc);
+    }
+
+    public int getMovement() {
+        return movement;
+    }
+
+    public void setMovement(int movement) {
+        this.movement = movement;
     }
 
     public PlayerTeam getPlayerTeam(){

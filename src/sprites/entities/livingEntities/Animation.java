@@ -7,15 +7,13 @@ import src.tools.time.DeltaTimer;
 
 import java.awt.image.BufferedImage;
 import java.util.EnumMap;
-import java.util.List;
 import java.util.Map;
-
-import static src.tools.image.BufferedImageMirror.mirrorHorizontally;
 
 public class Animation {
     private LivingEntityState entityState;
     private LivingEntityState queuedState;
     private final Map<LivingEntityState, AnimationComponent> stateAnimations;
+    private final Map<LivingEntityState, Double> timeBetweenFrames;
     private int currentFrame;
     private final DeltaTimer timer;
     private boolean forceAnimation = false;
@@ -23,6 +21,15 @@ public class Animation {
     public Animation(Character.CharacterEnum character){
         this.entityState = LivingEntityState.IDLE;
         stateAnimations = new EnumMap<>(LivingEntityState.class);
+        timeBetweenFrames = Map.ofEntries(
+                Map.entry(LivingEntityState.IDLE, 0.3),
+                Map.entry(LivingEntityState.ATTACK1, 0.13),
+                Map.entry(LivingEntityState.ATTACK2, 0.13),
+                Map.entry(LivingEntityState.DEATH, 0.2),
+                Map.entry(LivingEntityState.DEAD, 1.0),
+                Map.entry(LivingEntityState.RUN, 0.1),
+                Map.entry(LivingEntityState.HIT, 0.2)
+                );
 
         for (LivingEntityState state: LivingEntityState.values()){
             stateAnimations.put(state, Game.imageLoader.getCharacterAnimation(character, state));
@@ -32,14 +39,13 @@ public class Animation {
 
     public void update(DeltaTime deltaTime){
         timer.update(deltaTime);
-        final double timeBetweenFrames = 0.2;
-        final double animationTime = timeBetweenFrames * stateAnimations.get(entityState).getAnimationLength();
+        final double animationTime = timeBetweenFrames.get(entityState) * stateAnimations.get(entityState).getAnimationLength();
         if (forceAnimation && timer.getElapsedSeconds() > animationTime) {
             forceAnimation = false;
             setAnimation(queuedState);
         }
 
-        currentFrame = (int)(timer.getElapsedSeconds() / timeBetweenFrames);
+        currentFrame = (int)(timer.getElapsedSeconds() / timeBetweenFrames.get(entityState));
     }
 
     public BufferedImage getAnimationFrame(Rotation rotation){

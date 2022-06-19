@@ -1,6 +1,8 @@
 package src.tools.aStar;
 
 
+import src.sprites.entities.livingEntities.CombatLivingEntity;
+import src.tools.Vector2D;
 import src.tools.aStar.heuristics.ClosestHeuristic;
 import src.tools.aStar.heuristics.ClosestSquaredHeuristic;
 import src.tools.aStar.heuristics.ManhattanHeuristic;
@@ -46,6 +48,21 @@ public class AStarPathFinder implements PathFinder {
     @Override
     public void setMap(PathMap newMap) {
         map = newMap;
+    }
+
+    @Override
+    public boolean[][] getMovementShade(CombatLivingEntity currentEntity) {
+        boolean[][] movementGrid = new boolean[map.getWidthInTiles()][map.getHeightInTiles()];
+        Vector2D position = currentEntity.getPosition();
+
+        for (int x = 0; x < movementGrid.length; x++) {
+            for (int y = 0; y < movementGrid[x].length; y++) {
+                movementGrid[x][y] = null == findPath(currentEntity, (int)position.getX(), (int)position.getY(), x, y);
+            }
+        }
+
+
+        return movementGrid;
     }
 
     public Path findPath(Mover mover, int sx, int sy, int tx, int ty) {

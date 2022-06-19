@@ -14,7 +14,6 @@ import java.awt.*;
 public class CombatLivingEntity extends LivingEntity {
     protected CombatStats stats;
     protected boolean isEntityTurn = false;
-
     public CombatLivingEntity(Character.CharacterEnum character, PlayerTeam team) {
         super(new Vector2D(), character, team, null);
         timeBetweenMoves = 0.5;
@@ -72,6 +71,14 @@ public class CombatLivingEntity extends LivingEntity {
         return stats.getInitiative();
     }
 
+    @Override
+    public int getMovement(){return stats.getMovement();}
+
+    @Override
+    public void setMovement(int movement) {
+        stats.setMovement(movement);
+    }
+
     public void setCombatEntityHandler(EntityHandler combatEntityHandler){
         this.entityHandler = combatEntityHandler;
     }
@@ -82,6 +89,7 @@ public class CombatLivingEntity extends LivingEntity {
 
     public void setEntityTurn(boolean isEntityTurn){
         this.isEntityTurn = isEntityTurn;
+        stats.resetMovement();
     }
 
     public boolean isDead() {
@@ -96,8 +104,8 @@ public class CombatLivingEntity extends LivingEntity {
         final int bannerWidth = 26;
         final int bannerHeight = bannerWidth / 2;
 
-        final int bannerOffsetY = 40;
-        final int bannerOffsetX = 150;
+        final int bannerOffsetY = - (int)(tileSize * 0.5);
+        final int bannerOffsetX = (int)((size.getX() * tileSize  - bannerWidth)* 0.5);
         final int drawX = (int)(drawPosition.getX() + bannerOffsetX);
         final int drawY = (int)(drawPosition.getY() + bannerOffsetY);
 
@@ -118,6 +126,8 @@ public class CombatLivingEntity extends LivingEntity {
     @Override
     public void draw(Graphics g, JComponent gc) {
         super.draw(g, gc);
-        if (isEntityTurn) drawSizeRect(g);
+        if (isEntityTurn) {
+            drawSizeRect(g);
+        }
     }
 }

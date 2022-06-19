@@ -14,10 +14,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class Entity implements Sprite, Mover {
-    protected Vector2D position;
-    protected Vector2D drawPosition;
+    protected Vector2D position; //Position on map, measured in "tiles"
+    protected Vector2D drawPosition; //Sprite's position on screen at this moment, can be "between" tiles when moving, measured in pixels
 
-    protected Vector2D relativePosition;
+    protected Vector2D relativePosition; //Position on screen, i.e takes into account that what is shown on screen is
+    // only a small part of the map, so relative position might be (0,0) but map wise it could really be any point. Measured in pixels
     protected Vector2D size;
     protected Rotation rotation;
     protected BufferedImage texture;
@@ -41,8 +42,7 @@ public abstract class Entity implements Sprite, Mover {
     }
 
     @Override public void draw(final Graphics g, final JComponent gc) {
-        g.drawImage(getTexture(), (int) drawPosition.getX(),
-                (int) drawPosition.getY(), gc);
+        g.drawImage(getTexture(), (int) drawPosition.getX(), (int) drawPosition.getY(), gc);
     }
 
     protected Vector2D getRelativeMapPosition(Vector2D pos, Vector2D focusPos){

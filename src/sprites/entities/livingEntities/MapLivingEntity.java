@@ -7,9 +7,13 @@ import src.sprites.entities.CollectableMapEntity;
 import src.sprites.entities.Entity;
 import src.sprites.entities.EntityHandler;
 import src.tools.Vector2D;
+import src.tools.aStar.Path;
+import src.tools.aStar.PathFinder;
+import src.tools.aStar.PathMap;
 
 public class MapLivingEntity extends LivingEntity {
     protected final Game game;
+    protected Path queuedPath;
     protected Army army;
     /**
      * A unit on the GameMap that can move, belongs to a team and has an army
@@ -24,6 +28,18 @@ public class MapLivingEntity extends LivingEntity {
         super(position, character, team, mapEntityHandler);
         this.game = game;
         this.army = new Army(team);
+    }
+
+    @Override
+    public boolean onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
+        boolean result = super.onMouseClick3(map, finder, mouseMapPos);
+        /*if (queuedPath == path){
+            queuedPath = null;
+        } else {
+            queuedPath = path;
+            path = null;
+        }*/
+        return result;
     }
 
     @Override

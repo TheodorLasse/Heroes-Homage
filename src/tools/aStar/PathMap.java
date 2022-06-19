@@ -8,9 +8,9 @@ import java.awt.*;
  * CREDIT TO KEVIN GLASS FOR A* ALGORITHM
  */
 public class PathMap implements TileBasedMap{
-    private Dimension mapSize;
-    private int[][] terrain;
-    private boolean[][] visited;
+    private final Dimension mapSize;
+    private final int[][] terrain;
+    private final boolean[][] visited;
 
     public PathMap(Dimension mapSize, int[][] terrain){
         this.mapSize = mapSize;
