@@ -4,6 +4,7 @@ import src.Game;
 import src.sprites.entities.Entity;
 import src.sprites.entities.EntityHandler;
 import src.sprites.entities.EntityType;
+import src.tools.JsonReader;
 import src.tools.Rotation;
 import src.tools.WindowFocus;
 import src.player.PlayerTeam;
@@ -17,9 +18,12 @@ import src.tools.time.DeltaTime;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Map;
+import java.util.List;
 
 public abstract class LivingEntity extends Entity {
-    protected Character.CharacterEnum character;
+    protected final Character.CharacterEnum character;
+    protected final Vector2D characterOffset;
     protected Animation animation;
     protected boolean alive = true;
     protected PlayerTeam team;
@@ -53,6 +57,11 @@ public abstract class LivingEntity extends Entity {
             case BLUE -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.BLUE_FLAG);
             default -> flag = Game.imageLoader.getImage(ImageLoader.ImageName.ERROR);
         }
+
+        Map<?, ?> jsonMap = JsonReader.readJsonCritical(character);
+        int offset_x = (int) (double) jsonMap.get("character_offset_x");
+        int offset_y = (int) (double) jsonMap.get("character_offset_y");
+        characterOffset = new Vector2D(offset_x, offset_y);
     }
 
     @Override
@@ -174,7 +183,7 @@ public abstract class LivingEntity extends Entity {
 
     @Override
     public void draw(Graphics g, JComponent gc) {
-        Vector2D offsetPosition = Vector2D.getSum(drawPosition, Character.CHARACTER_OFFSET);
+        Vector2D offsetPosition = Vector2D.getSum(drawPosition, characterOffset);
         g.drawImage(getTexture(), (int) offsetPosition.getX(), (int) offsetPosition.getY(), gc);
         drawBanner(g, gc);
     }

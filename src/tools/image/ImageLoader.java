@@ -4,6 +4,7 @@ import src.player.Resource;
 import src.sprites.entities.livingEntities.AnimationComponent;
 import src.sprites.entities.livingEntities.Character;
 import src.sprites.entities.livingEntities.LivingEntityState;
+import src.tools.JsonReader;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -41,13 +42,14 @@ public class ImageLoader
     );
 
     final private static Map<Character.CharacterEnum, String> CHARACTER_NAME_MAP = Map.ofEntries(
-            Map.entry(Character.CharacterEnum.ORC, "orc")
+            Map.entry(Character.CharacterEnum.ORC, "orc"),
+            Map.entry(Character.CharacterEnum.NECROMANCER_LIGHT, "necromancer_light")
     );
 
     final private static Map<LivingEntityState, String> STATE_NAME_MAP = Map.ofEntries(
             Map.entry(LivingEntityState.ATTACK1, "attack1"),
             Map.entry(LivingEntityState.ATTACK2, "attack2"),
-            Map.entry(LivingEntityState.RUN, "walk"),
+            Map.entry(LivingEntityState.RUN, "run"),
             Map.entry(LivingEntityState.DEATH, "death"),
             Map.entry(LivingEntityState.DEAD, "dead"),
             Map.entry(LivingEntityState.HIT, "hit"),
@@ -129,8 +131,13 @@ public class ImageLoader
         for (Character.CharacterEnum characterEnum : Character.CharacterEnum.values()) {
             characterAnimations.get(characterEnum);
             Map<LivingEntityState, AnimationComponent> iterCharacterAnimations;
-             iterCharacterAnimations = new EnumMap<>(LivingEntityState.class);
-             characterAnimations.put(characterEnum, iterCharacterAnimations);
+            iterCharacterAnimations = new EnumMap<>(LivingEntityState.class);
+            characterAnimations.put(characterEnum, iterCharacterAnimations);
+
+            Map<?, ?> jsonMap = JsonReader.readJsonCritical(characterEnum);
+
+            int numberOfDirections = 8; //CombatEntity sprites have 8 directions, MapEntity sprites have 16
+            if (characterEnum == Character.CharacterEnum.NECROMANCER_LIGHT) numberOfDirections = 16;
 
             for (LivingEntityState state : LivingEntityState.values()) {
                 String charName = CHARACTER_NAME_MAP.get(characterEnum);
@@ -139,9 +146,12 @@ public class ImageLoader
                 if (imgURL == null) {
                     throw new FileNotFoundException("Could not find resource " + name);
                 }
-                final int numberOfDirections = 8;
+
+                final String animationLengthName = STATE_NAME_MAP.get(state) + "_length";
+                int animationLength = (int) (double) jsonMap.get(animationLengthName);
+
                 AnimationComponent animationComponent = new AnimationComponent(
-                        loadSheet(loadImage(imgURL), 0, numberOfDirections, ANIMATION_LENGTH_MAP.get(state)));
+                        loadSheet(loadImage(imgURL), numberOfDirections, animationLength));
                 iterCharacterAnimations.put(state, animationComponent);
             }
         }
@@ -160,10 +170,10 @@ public class ImageLoader
     /**
      * Loads and returns an image. If the image can't be loaded, a default image will be returned.
      *
-     * @param url
+     * @param url image's path
      *
      * @return image
-     * @throws IOException
+     * @throws IOException image not found
      */
     private static BufferedImage loadImage(URL url) throws IOException {
         return ImageIO.read(url);
@@ -172,17 +182,16 @@ public class ImageLoader
     /**
      * Cuts a sheet into sub images and puts them each into a List<BufferedImage>. This function is used for when
      * many characters share the same image for specific parts of an animation.
-     * @param sheet Sheet to process
-     * @param startRow Row from which it will start taking images from
-     *                 (i.e, start from row index 2, so skip index 0 and 1)
-     * @param endRow Row from which it will stop taking images from
-     *               (i.e, end at index 5, so everything below will be ignored)
+     *
+     * @param sheet       Sheet to process
+     * @param endRow      Row from which it will stop taking images from
+     *                    (i.e, end at index 5, so everything below will be ignored)
      * @param tilesPerRow Amount of sub images per row that are to be extracted
      *                    (i.e 3 characters per row)
      */
-    private List<List<BufferedImage>> loadSheet(BufferedImage sheet, int startRow, int endRow, int tilesPerRow){
+    private List<List<BufferedImage>> loadSheet(BufferedImage sheet, int endRow, int tilesPerRow){
         List<List<BufferedImage>> allDirectionsList = new ArrayList<>();
-        for (int i = 0; i < endRow - startRow; i++) {
+        for (int i = 0; i < endRow; i++) {
             allDirectionsList.add(new ArrayList<>());
         }
 
@@ -192,7 +201,7 @@ public class ImageLoader
         for (int k = 0; k < endRow; k++) {
             for (int i = 0; i < tilesPerRow; i++) {
                 allDirectionsList.get(k).add(sheet.getSubimage(
-                        i * tileWidth, (startRow + k) * tileHeight, tileWidth, tileHeight));
+                        i * tileWidth, (k) * tileHeight, tileWidth, tileHeight));
             }
         }
         return allDirectionsList;

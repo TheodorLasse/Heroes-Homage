@@ -49,11 +49,7 @@ public class Animation {
     }
 
     public BufferedImage getAnimationFrame(Rotation rotation){
-        double radiansPerIndex = Math.PI / 4;
-        double rotationRadians = rotation.getRadians();
-        double excessRadians = rotationRadians % radiansPerIndex;
-        int rotationIndex = (int)((rotationRadians - excessRadians) / radiansPerIndex);
-        return stateAnimations.get(entityState).getAnimationFrame(rotationIndex, currentFrame);
+        return stateAnimations.get(entityState).getAnimationFrame(rotation, currentFrame);
     }
 
     public LivingEntityState getEntityState() {

@@ -3,5 +3,14 @@
   "minDamage" : 1,
   "maxDamage" : 3,
   "initiative" : 1,
-  "movement" : 3
+  "movement" : 3,
+  "attack1_length" : 16,
+  "attack2_length" : 20,
+  "run_length" : 8,
+  "death_length" : 15,
+  "dead_length" : 1,
+  "hit_length" : 6,
+  "idle_length" : 8,
+  "character_offset_x" : -83,
+  "character_offset_y" : -85
 }

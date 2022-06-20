@@ -72,7 +72,7 @@ public class GameMap implements GameKeyListener {
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(15, 12), Resource.GOLD, mapEntityHandler));
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(18, 12), Resource.WOOD, mapEntityHandler));
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(21, 12), Resource.ORE, mapEntityHandler));
-        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Character.CharacterEnum.ORC, game, playerTeamList.get(0), mapEntityHandler));
+        mapEntityHandler.add(new MapLivingEntity(new Vector2D(10,18), Character.CharacterEnum.NECROMANCER_LIGHT, game, playerTeamList.get(0), mapEntityHandler));
         mapEntityHandler.add(new MapLivingEntity(new Vector2D(14,18), Character.CharacterEnum.ORC, game, playerTeamList.get(1), mapEntityHandler));
     }
 

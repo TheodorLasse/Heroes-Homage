@@ -99,7 +99,7 @@ public class CombatLivingEntity extends LivingEntity {
         final int bannerHeight = bannerWidth / 2;
 
         final int bannerOffsetY = - (int)(tileSize * 0.5);
-        final int bannerOffsetX = (int)((size.getX() * tileSize  - bannerWidth)* 0.5);
+        final int bannerOffsetX = (int)((size.getX() * tileSize  - bannerWidth) * 0.5);
         final int drawX = (int)(drawPosition.getX() + bannerOffsetX);
         final int drawY = (int)(drawPosition.getY() + bannerOffsetY);
 

@@ -39,6 +39,12 @@ public class MapLivingEntity extends LivingEntity {
     }
 
     @Override
+    protected void updateRotation(Vector2D direction){
+        super.updateRotation(direction);
+        this.rotation.addRadians(Math.PI);
+    }
+
+    @Override
     public boolean onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
         boolean result = super.onMouseClick3(map, finder, mouseMapPos);
         if (path != null && !path.equals(queuedPath)) {

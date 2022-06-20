@@ -20,12 +20,8 @@ public class JsonReader
 {
     private static final Logger LOGGER = Logger.getLogger("");
 
-    private static final Map<Character.CharacterEnum, String> CHARACTER_MAP = Map.ofEntries(
-            Map.entry(Character.CharacterEnum.ORC, "orc")
-            );
-
     public static Map<?, ?> readJson(Character.CharacterEnum character) throws IOException {
-        String fileName = CHARACTER_MAP.get(character);
+        String fileName = character.toString().toLowerCase();
 
         Gson gson = new Gson();
 
