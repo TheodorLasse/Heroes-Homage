@@ -44,6 +44,22 @@ public class Path {
         return steps.remove(0);
     }
 
+    public boolean equals(Object other){
+        if (!(other instanceof Path)) {
+            return false;
+        } else {
+            Path o = ((Path)other);
+            if (o.getLength() != this.getLength()) return false;
+
+            boolean result = true;
+            for (int i = 0; i < o.getLength(); i++) {
+                result = o.getStep(i).equals(this.getStep(i));
+                if (!result) break;
+            }
+            return result;
+        }
+    }
+
     public static class Step {
         private final int x;
         private final int y;

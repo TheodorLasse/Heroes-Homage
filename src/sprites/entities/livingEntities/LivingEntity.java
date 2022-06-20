@@ -45,7 +45,7 @@ public abstract class LivingEntity extends Entity {
         this.character = character;
         this.animation = new Animation(character);
         this.texture = animation.getAnimationFrame(rotation);
-        movement = 5;
+        movement = 10;
         setEntityType(EntityType.LIVING);
 
         switch (team.getTeamColor()){
@@ -89,7 +89,6 @@ public abstract class LivingEntity extends Entity {
             updateRotation(direction);
             Vector2D directionAdjusted = Vector2D.getProduct(direction, directionLength);
             drawPosition = Vector2D.getSum(directionAdjusted, drawPosition);
-
         }
     }
 

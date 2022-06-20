@@ -19,12 +19,6 @@ public class CombatLivingEntity extends LivingEntity {
         timeBetweenMoves = 0.5;
         stats = new CombatStats(1, character);
     }
-    public CombatLivingEntity(Vector2D position, Vector2D size, Character.CharacterEnum character, PlayerTeam team) {
-        super(position, character, team, null);
-        setSize(size);
-        timeBetweenMoves = 0.5;
-        stats = new CombatStats(1, character);
-    }
 
     @Override
     public void update(DeltaTime deltaTime, WindowFocus focus) {

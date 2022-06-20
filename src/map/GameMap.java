@@ -6,12 +6,12 @@ import src.player.PlayerTeamColor;
 import src.player.Resource;
 import src.sprites.entities.*;
 import src.sprites.entities.livingEntities.Character;
-import src.sprites.entities.livingEntities.LivingEntity;
 import src.sprites.entities.livingEntities.MapLivingEntity;
 import src.sprites.entities.MapEntity;
 import src.sprites.SpriteTexture;
 import src.tools.*;
 import src.tools.aStar.AStarPathFinder;
+import src.tools.aStar.Path;
 import src.tools.aStar.PathFinder;
 import src.tools.aStar.PathMap;
 import src.tools.image.ImageLoader;
@@ -37,14 +37,13 @@ public class GameMap implements GameKeyListener {
     private final SpriteHandler mapSpriteHandler;
     private final EntityHandler mapEntityHandler;
     private final BufferedImage background;
+    private List<SpriteTexture> pathSprites;
     private final PathFinder finder;
-
     private final Dimension mapSize = new Dimension(100,100);
     private final Dimension screenSize;
     private final WindowFocus windowFocus;
     private final MapTurn mapTurn;
-    private LivingEntity entityFocus;
-
+    private MapLivingEntity entityFocus;
     private final int teamCount = 2;
 
     /**
@@ -67,6 +66,7 @@ public class GameMap implements GameKeyListener {
         for (SpriteTexture borderTexture:factory.createBorders()) {
             mapSpriteHandler.add(borderTexture, SpriteLayer.LAST);
         }
+        pathSprites = new ArrayList<>();
 
         mapEntityHandler.add(new MapEntity(new Vector2D(10,12), Game.imageLoader.getImage(ImageLoader.ImageName.ROCK)));
         mapEntityHandler.add(new CollectableMapEntity(new Vector2D(15, 12), Resource.GOLD, mapEntityHandler));
@@ -109,7 +109,7 @@ public class GameMap implements GameKeyListener {
 
     /**
      *
-     * @return Iterable of all of the Entity objects located in the GameMap
+     * @return Iterable of all the Entity objects located in the GameMap
      */
     public ArrayList<Sprite> getIterator(){
         mapSpriteHandler.setBackground(background.getSubimage(
@@ -164,8 +164,39 @@ public class GameMap implements GameKeyListener {
      * @param deltaTime how long since last update
      */
     public void update(DeltaTime deltaTime){
+        updatePathSprites(entityFocus);
+
         mapSpriteHandler.update(deltaTime);
         mapEntityHandler.update(deltaTime, windowFocus);
+    }
+
+    /**
+     * updates the SpriteTextures which denote where a MapLivingEntity's path lies.
+     * @param entity the Entity whose path is drawn.
+     */
+    private void updatePathSprites(MapLivingEntity entity) {
+        ArrayList<SpriteTexture> newPathSprites = new ArrayList<>();
+        if (entity != null && entity.getQueuedPath() != null) {
+            Path path = entity.getQueuedPath();
+            final int tileSize = windowFocus.getTileSize();
+            for (int i = 0; i < path.getLength(); i++) {
+                Path.Step step = path.getStep(i);
+
+                BufferedImage stepImage = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = stepImage.getGraphics();
+                g.setColor(Color.ORANGE);
+                g.fillRect(0, 0, tileSize, tileSize);
+                SpriteTexture stepSprite = new SpriteTexture(new Vector2D(step.getX() * tileSize, step.getY() * tileSize), 0, stepImage);
+                newPathSprites.add(stepSprite);
+            }
+        }
+        for (SpriteTexture spriteTexture : pathSprites) {
+            mapSpriteHandler.remove(spriteTexture);
+        }
+        for (SpriteTexture spriteTexture : newPathSprites) {
+            mapSpriteHandler.add(spriteTexture, SpriteLayer.LAST);
+        }
+        pathSprites = newPathSprites;
     }
 
     /**
@@ -179,7 +210,7 @@ public class GameMap implements GameKeyListener {
         if(mouseButton == 1){
             for (Entity mapEntity : mapEntityHandler.getIterator()) {
                 if (mapEntity.isOverlap(mouseAbsolutePos) && mapEntity.getEntityType() == EntityType.LIVING){
-                    entityFocus = (LivingEntity)mapEntity;
+                    entityFocus = (MapLivingEntity)mapEntity;
                     return;
                 }
             }
@@ -203,7 +234,10 @@ public class GameMap implements GameKeyListener {
                 if (entityFocus != null) entityFocus = null;
                 else System.exit(-1);
             }
-            case E -> mapTurn.nextPlayersTurn();
+            case E -> {
+                mapTurn.nextPlayersTurn();
+                entityFocus = null;
+            }
         }
     }
 }

@@ -7,9 +7,11 @@ import src.sprites.entities.CollectableMapEntity;
 import src.sprites.entities.Entity;
 import src.sprites.entities.EntityHandler;
 import src.tools.Vector2D;
+import src.tools.WindowFocus;
 import src.tools.aStar.Path;
 import src.tools.aStar.PathFinder;
 import src.tools.aStar.PathMap;
+import src.tools.time.DeltaTime;
 
 public class MapLivingEntity extends LivingEntity {
     protected final Game game;
@@ -31,14 +33,18 @@ public class MapLivingEntity extends LivingEntity {
     }
 
     @Override
+    protected void move(DeltaTime deltaTime, WindowFocus focus) {
+        super.move(deltaTime, focus);
+        if (!isInactive()) queuedPath = path;
+    }
+
+    @Override
     public boolean onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
         boolean result = super.onMouseClick3(map, finder, mouseMapPos);
-        /*if (queuedPath == path){
-            queuedPath = null;
-        } else {
+        if (path != null && !path.equals(queuedPath)) {
             queuedPath = path;
             path = null;
-        }*/
+        }
         return result;
     }
 
@@ -61,5 +67,9 @@ public class MapLivingEntity extends LivingEntity {
 
     public Army getArmy() {
         return army;
+    }
+
+    public Path getQueuedPath() {
+        return queuedPath;
     }
 }
