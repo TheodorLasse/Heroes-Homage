@@ -1,8 +1,6 @@
 package src.combat;
 
 import src.sprites.entities.livingEntities.CombatLivingEntity;
-import src.tools.aStar.AStarPathFinder;
-import src.tools.aStar.PathFinder;
 
 import java.util.ArrayList;
 

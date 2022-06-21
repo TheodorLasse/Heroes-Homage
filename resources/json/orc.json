@@ -1,9 +1,10 @@
 {
   "maxHealth" : 10,
-  "minDamage" : 1,
-  "maxDamage" : 3,
+  "minDamage" : 3,
+  "maxDamage" : 8,
   "initiative" : 1,
-  "movement" : 3,
+  "movement" : 20,
+
   "attack1_length" : 16,
   "attack2_length" : 20,
   "run_length" : 8,

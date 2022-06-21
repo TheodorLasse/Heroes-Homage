@@ -1,5 +1,6 @@
 package src.sprites.entities;
 
+import src.sprites.entities.livingEntities.LivingEntity;
 import src.tools.WindowFocus;
 import src.sprites.Sprite;
 import src.tools.time.DeltaTime;
@@ -13,9 +14,9 @@ import java.util.List;
  */
 public class EntityHandler
 {
-    private List<Entity> entities;
-    private List<Entity> toRemove;
-    private List<Entity> toAdd;
+    private final List<Entity> entities;
+    private final List<Entity> toRemove;
+    private final List<Entity> toAdd;
 
 
     public EntityHandler() {
@@ -39,7 +40,7 @@ public class EntityHandler
     /**
      * Updates the entity handler and all entities.
      *
-     * @param deltaTime
+     * @param deltaTime time between updates
      */
     public void update(DeltaTime deltaTime, WindowFocus focus) {
         // Update all entities
@@ -62,7 +63,7 @@ public class EntityHandler
     /**
      * Schedules an entity for addition to the entity handler. It will be added when possible.
      *
-     * @param entity
+     * @param entity entity to be added
      */
     public void add(Entity entity) {
 	toAdd.add(entity);
@@ -71,7 +72,7 @@ public class EntityHandler
     /**
      * Schedules an entity for removal from the entity handler. It will be removed when possible.
      *
-     * @param entity
+     * @param entity entity to be removed
      */
     public void remove(Entity entity) {
 	// Do not allow duplicates
@@ -104,5 +105,21 @@ public class EntityHandler
     private void clearEntities() {
 	entities.removeAll(toRemove);
 	toRemove.clear();
+    }
+
+    /**
+     * Are the entities in the handler currently active or not
+     * @return true, they are active, false they are not
+     */
+    public boolean entitiesInactive(){
+        boolean entitiesInactive = true; //if set to false somewhere in for loop, keep it false
+        for (Entity entity : getIterator()) {
+            if (entity.getEntityType() == EntityType.LIVING && entitiesInactive){
+                LivingEntity livingEntity = (LivingEntity)entity;
+                entitiesInactive = livingEntity.isInactive();
+            }
+        }
+
+        return entitiesInactive;
     }
 }

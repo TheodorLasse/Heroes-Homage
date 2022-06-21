@@ -1,7 +1,5 @@
 package src.sprites.entities.livingEntities;
 
-import src.tools.Vector2D;
-
 
 public class Character {
     /**

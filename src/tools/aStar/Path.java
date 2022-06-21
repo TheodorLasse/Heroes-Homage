@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * CREDIT TO KEVIN GLASS FOR A* ALGORITHM
  */
-public class Path {
+public class Path implements Comparable<Path>{
     private final ArrayList<Step> steps = new ArrayList<>();
 
     public Path() {
@@ -58,6 +58,11 @@ public class Path {
             }
             return result;
         }
+    }
+
+    @Override
+    public int compareTo(Path o) {
+        return Integer.compare(this.getLength(), o.getLength());
     }
 
     public static class Step {

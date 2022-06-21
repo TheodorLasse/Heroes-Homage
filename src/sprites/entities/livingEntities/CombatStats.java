@@ -13,7 +13,6 @@ public class CombatStats {
     private final int maxDamage;
     private final int initiative;
     private final int maxMovement;
-    private int currentMovement;
     private final Random rnd = new Random();
 
     /**
@@ -30,7 +29,6 @@ public class CombatStats {
         initiative = (int) (double) jsonMap.get("initiative");
         maxMovement = (int) (double) jsonMap.get("movement");
         totalHealth = maxHealth * stackSize;
-        currentMovement = maxMovement;
     }
 
     /**
@@ -46,9 +44,11 @@ public class CombatStats {
      * Inflict damage on this set of stats.
      * @param damage Damage that was taken.
      */
-    public void takeDamage(int damage){
+    public int takeDamage(int damage){
+        int oldStackSize = stackSize;
         totalHealth -= damage;
         stackSize = (int)Math.ceil((double)totalHealth / maxHealth);
+        return stackSize - oldStackSize;
     }
 
     public int getTotalHealth() {
@@ -63,15 +63,5 @@ public class CombatStats {
         return initiative;
     }
 
-    public int getMovement() {
-        return currentMovement;
-    }
-
-    public void setMovement(int movement) {
-        currentMovement = movement;
-    }
-
-    public void resetMovement(){
-        currentMovement = maxMovement;
-    }
+    public int getMaxMovement() {return maxMovement;}
 }

@@ -65,6 +65,31 @@ public class AStarPathFinder implements PathFinder {
         return movementGrid;
     }
 
+    /**
+     * Get a path to a location adjacent to the specified location
+     * @param mover Entity which is moving
+     * @param sx x pos of entity
+     * @param sy y pos of entity
+     * @param tx x pos of target location which area is centred around
+     * @param ty y pos of target location which area is centred around
+     * @return the shortest path while still pathing to an adjacent tile or the target tile itself
+     */
+    @Override
+    public Path findPathAdjacent(Mover mover, int sx, int sy, int tx, int ty) {
+        Path nonAdjacentPath = findPath(mover, sx, sy, tx, ty);
+        if (nonAdjacentPath != null) return nonAdjacentPath;
+
+        ArrayList<Path> possiblePaths = new ArrayList<>();
+        for (int x = tx - 1; x < tx + 1; x++) {
+            for (int y = ty - 1; y < ty + 1; y++) {
+                Path iterPath = findPath(mover, sx, sy, x, y);
+                if (iterPath != null) possiblePaths.add(iterPath);
+            }
+        }
+        Collections.sort(possiblePaths);
+        return possiblePaths.get(0);
+    }
+
     public Path findPath(Mover mover, int sx, int sy, int tx, int ty) {
         boolean isOutOfRange = tx >= map.getWidthInTiles() || tx < 0 || ty >= map.getHeightInTiles() || ty < 0;
         if (isOutOfRange || this.map.blocked(mover, tx, ty)) {

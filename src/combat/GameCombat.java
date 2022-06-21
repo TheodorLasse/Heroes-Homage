@@ -5,7 +5,6 @@ import src.Game;
 import src.sprites.SpriteTexture;
 import src.sprites.entities.*;
 import src.sprites.entities.livingEntities.CombatLivingEntity;
-import src.sprites.entities.livingEntities.LivingEntity;
 import src.sprites.Sprite;
 import src.sprites.SpriteHandler;
 import src.sprites.SpriteLayer;
@@ -25,7 +24,6 @@ import java.util.List;
 
 public class GameCombat {
     public static final Dimension ARENA_SIZE = new Dimension(18, 10);
-    private final int gridSquareLength;
     private final Game game;
     private Army attacker, defender;
     private final SpriteHandler combatSpriteHandler;
@@ -45,7 +43,7 @@ public class GameCombat {
         finder = new AStarPathFinder(new PathMap(ARENA_SIZE, null), 50, true);
         factory = new CombatSpriteFactory(game.getCombatScreenDimension());
 
-        gridSquareLength = factory.getGridSquareLength();
+        int gridSquareLength = factory.getGridSquareLength();
         Vector2D gridPos = factory.getGridOffset(); // measured in pixels
         Vector2D focusPos = new Vector2D(gridPos.getX() / gridSquareLength, gridPos.getY() / gridSquareLength); // measured in tiles
         Dimension screenSize = game.getCombatScreenDimension();
@@ -65,16 +63,11 @@ public class GameCombat {
     }
 
     public void update(DeltaTime deltaTime) {
-        boolean stationaryTemp = true; //if set to false somewhere in for loop, keep it false
         for (Entity entity : combatEntityHandler.getIterator()) {
             entity.update(deltaTime, focus);
-            if (entity.getEntityType() == EntityType.LIVING && stationaryTemp){
-                LivingEntity livingEntity = (LivingEntity)entity;
-                stationaryTemp = livingEntity.isInactive();
-            }
         }
 
-        entitiesStationary = stationaryTemp;
+        entitiesStationary = combatEntityHandler.entitiesInactive();
         if (entitiesStationary) updateAllowedMovementShade();
         else combatSpriteHandler.remove(movementShade);
 

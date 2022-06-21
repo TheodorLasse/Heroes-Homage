@@ -199,6 +199,18 @@ public class GameMap implements GameKeyListener {
         pathSprites = newPathSprites;
     }
 
+    private void endTurn(){
+        PlayerTeam currentPlayer = mapTurn.getCurrentPlayer();
+        for (Entity iterEntity : mapEntityHandler.getIterator()) {
+            if (iterEntity.getEntityType() == EntityType.LIVING &&
+                    ((MapLivingEntity)iterEntity).getPlayerTeam() == currentPlayer) {
+                ((MapLivingEntity)iterEntity).resetMovement();
+            }
+        }
+        mapTurn.nextPlayersTurn();
+        entityFocus = null;
+    }
+
     /**
      * When GameMap is clicked on by mouse
      * @param mousePos position of mouse on JFrame
@@ -235,8 +247,9 @@ public class GameMap implements GameKeyListener {
                 else System.exit(-1);
             }
             case E -> {
-                mapTurn.nextPlayersTurn();
-                entityFocus = null;
+                if (mapEntityHandler.entitiesInactive()){
+                    endTurn();
+                }
             }
         }
     }

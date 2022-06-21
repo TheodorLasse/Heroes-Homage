@@ -19,11 +19,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Map;
-import java.util.List;
 
 public abstract class LivingEntity extends Entity {
     protected final Character.CharacterEnum character;
     protected final Vector2D characterOffset;
+    protected Vector2D interactPos;
     protected Animation animation;
     protected boolean alive = true;
     protected PlayerTeam team;
@@ -31,6 +31,7 @@ public abstract class LivingEntity extends Entity {
     protected BufferedImage flag;
     protected Path path;
     protected int movement;
+    protected int maxMovement;
     protected double timeUntilMove = 0;
     protected double timeBetweenMoves = 0.3;
     protected int tileSize = 0;
@@ -49,7 +50,8 @@ public abstract class LivingEntity extends Entity {
         this.character = character;
         this.animation = new Animation(character);
         this.texture = animation.getAnimationFrame(rotation);
-        movement = 10;
+        maxMovement = 10;
+        movement = maxMovement;
         setEntityType(EntityType.LIVING);
 
         switch (team.getTeamColor()){
@@ -68,6 +70,7 @@ public abstract class LivingEntity extends Entity {
     public void update(DeltaTime deltaTime, WindowFocus focus) {
         super.update(deltaTime, focus);
         if (alive) move(deltaTime, focus);
+        if (interactPos != null) tryInteract(interactPos);
         animation.update(deltaTime);
         this.texture = animation.getAnimationFrame(rotation);
         this.tileSize = focus.getTileSize();
@@ -107,6 +110,7 @@ public abstract class LivingEntity extends Entity {
             if (interactConditions(entity, InteractPosition)){
                 interactAction(entity);
                 performedAction = true;
+                interactPos = null;
             }
         }
         return performedAction;
@@ -134,24 +138,30 @@ public abstract class LivingEntity extends Entity {
     @Override
     public boolean onMouseClick3(PathMap map, PathFinder finder, Vector2D mouseMapPos) {
         if (!alive) return false;
-
         Vector2D mouseRounded = new Vector2D((int)mouseMapPos.getX(), (int)mouseMapPos.getY());
-        Vector2D diff = Vector2D.getDifference(position, mouseRounded);
-        boolean interactBool = false;
-        if (diff.getLength() <= 1.42){
-            interactBool = interact(mouseMapPos);
-        }
+        interactPos = mouseRounded;
+
+        if (tryInteract(mouseRounded)) return true;
 
         finder.setMap(map);
-        path = finder.findPath(this, (int)position.getX(), (int)position.getY(),
+        path = finder.findPathAdjacent(this, (int)position.getX(), (int)position.getY(),
                 (int)mouseRounded.getX(), (int)mouseRounded.getY());
 
         if (path == null) {
-            return interactBool;
+            return false;
         } else {
             animation.setAnimation(LivingEntityState.RUN);
             return true;
         }
+    }
+
+    private boolean tryInteract(Vector2D interactPos){
+        Vector2D diff = Vector2D.getDifference(position, interactPos);
+
+        if (diff.getLength() <= 1.42){
+            return interact(interactPos);
+        }
+        return false;
     }
 
     @Override
@@ -171,6 +181,10 @@ public abstract class LivingEntity extends Entity {
         }
     }
 
+    /**
+     * Use only for debugging
+     * @param g graphics
+     */
     protected void drawSizeRect(Graphics g){
         Graphics2D g2 = (Graphics2D) g;
         Stroke oldStroke = g2.getStroke();
@@ -196,6 +210,8 @@ public abstract class LivingEntity extends Entity {
         this.movement = movement;
     }
 
+    public void resetMovement() {this.movement = maxMovement;}
+
     public PlayerTeam getPlayerTeam(){
         return team;
     }
@@ -208,7 +224,12 @@ public abstract class LivingEntity extends Entity {
         return path == null || path.getLength() == 0;
     }
 
+    /**
+     * Is this entity currently active, i.e moving, attacking or performing some other action
+     * @return true, it is active, false it is not
+     */
     public boolean isInactive(){
-        return isStationary() && animation.getEntityState() == LivingEntityState.IDLE;
+        return isStationary() && (animation.getEntityState() == LivingEntityState.IDLE ||
+                animation.getEntityState() == LivingEntityState.DEAD);
     }
 }

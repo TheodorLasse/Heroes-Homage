@@ -18,7 +18,7 @@ public class ImageLoader
     public enum ImageName
     {
         GRASS, WATER, ROCK, BLUE_FLAG, RED_FLAG, MENU_BACKGROUND, GAME_BORDER, GAME_BORDER_CORNER, RESOURCE_PANEL,
-        COMBAT_TOP, COMBAT_BOTTOM, ERROR
+        COMBAT_TOP, COMBAT_BOTTOM, SKULL, ERROR
 
     }
 
@@ -37,6 +37,7 @@ public class ImageLoader
             Map.entry(ImageName.RESOURCE_PANEL, "resource_panel"),
             Map.entry(ImageName.COMBAT_TOP, "combat_top"),
             Map.entry(ImageName.COMBAT_BOTTOM, "combat_bottom"),
+            Map.entry(ImageName.SKULL, "skull"),
 
             Map.entry(ImageName.ERROR, "grass")
     );
